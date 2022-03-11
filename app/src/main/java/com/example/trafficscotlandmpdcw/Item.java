@@ -15,6 +15,8 @@ public class Item implements Parcelable {
     private String reason;
     private String link;
     private String georss;
+    private String latStr;
+    private String longStr;
     private String pubDate;
     private String itemType;
 
@@ -28,6 +30,8 @@ public class Item implements Parcelable {
         reason = in.readString();
         link = in.readString();
         georss = in.readString();
+        latStr = in.readString();
+        longStr = in.readString();
         pubDate = in.readString();
         itemType= in.readString();
     }
@@ -128,6 +132,22 @@ public class Item implements Parcelable {
         this.itemType = itemType;
     }
 
+    public String getLatStr() {
+        return latStr;
+    }
+
+    public void setLatStr(String latStr) {
+        this.latStr = latStr;
+    }
+
+    public String getLongStr() {
+        return longStr;
+    }
+
+    public void setLongStr(String longStr) {
+        this.longStr = longStr;
+    }
+
     public String toString() {
         return "Title: " +this.getTitle() +
                 " Description: " +
@@ -162,6 +182,8 @@ public class Item implements Parcelable {
         parcel.writeString(reason);
         parcel.writeString(link);
         parcel.writeString(georss);
+        parcel.writeString(latStr);
+        parcel.writeString(longStr);
         parcel.writeString(pubDate);
         parcel.writeString(itemType);
     }

@@ -11,23 +11,6 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/salutation"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Welcome to Mobile Platform Development Assignment 2021-2022"
-            android:textSize="20sp" />
-
-
-
-
-        <TextView
-            android:id="@+id/rawDataDisplay"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Raw Data is Displayed here"
-            android:textSize="20sp" />
-
         <FrameLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
