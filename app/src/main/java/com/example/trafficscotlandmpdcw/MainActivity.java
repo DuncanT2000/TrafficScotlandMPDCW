@@ -1,17 +1,23 @@
 package com.example.trafficscotlandmpdcw;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -26,7 +32,10 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener
@@ -37,12 +46,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
     private ArrayList<Item> currentincidents;
     private ArrayList<Item> roadworksincidents;
     private ArrayList<Item> AllFeedInfo = new ArrayList<Item>();
+    private ArrayList<Item> FilteredFeedInfo = new ArrayList<Item>();
     private String result = "";
     private String url1="";
+    private Button datePickerBtn;
+    private LocalDate selectedDate;
+    private TextView setDateTV;
     // Traffic Scotland Planned Roadworks XML link
     private String urlSourceplanned = "https://trafficscotland.org/rss/feeds/plannedroadworks.aspx";
     private String urlSourceCurrent = "https://trafficscotland.org/rss/feeds/currentincidents.aspx";
-    private String urlSourceroadworks = "https://trafficscotland.org/rss/feeds/roadworks.aspx";
+    private String urlSourceRoadworks = "https://trafficscotland.org/rss/feeds/roadworks.aspx";
+
+    private String[] urlArray = {"https://trafficscotland.org/rss/feeds/plannedroadworks.aspx",
+            "https://trafficscotland.org/rss/feeds/currentincidents.aspx",
+            "https://trafficscotland.org/rss/feeds/roadworks.aspx"};
 
     private Fragment fr1;
     private Fragment frFeed;
@@ -50,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
     private Fragment fr;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -59,6 +77,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         // Set up the raw links to the graphical components
         itemLayout = (LinearLayout) findViewById(R.id.ItemLayout);
         Log.e("MyTag","after startButton");
+
+        datePickerBtn = findViewById(R.id.datepickerBTN);
+        setDateTV = findViewById(R.id.setDateTV);
+
+
+
+        selectedDate = LocalDate.now();
+
+        setDateTV.setText(selectedDate.toString());
+
 
 
         fr1 = new FragmentOne();
@@ -78,8 +106,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
     public void startProgress()
     {
         // Run network access on a separate thread;
-        new Thread(new Task(urlSourceplanned, "planned")).start();
-        new Thread(new Task(urlSourceroadworks,"roadworks")).start();
+        new Thread(new Task(urlArray)).start();
+
     } //
 
 
@@ -126,22 +154,39 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
                                 return;
                             }
 
-                            String[] desDetails = temp.split("</br>");
+                            String[] desDetails = temp.split("<br />");
+
+
+
+
+                            for (int i = 0; i < desDetails.length -1; i++) {
+                                switch (i){
+                                    case 0:
+                                        String[] startDate = desDetails[i].split("Start Date: ");
+                                        alist.get(alist.size() - 1).setStartDate(startDate[1]);
+                                    break;
+                                    case 1:
+                                        String[] endDate = desDetails[i].split("End Date: ");
+                                        alist.get(alist.size() - 1).setEndDate(endDate[1]);
+                                        break;
+                                }
+
+                            }
 
                             alist.get(alist.size() - 1).setDescription(temp);
 
                         } else if (xpp.getName().equalsIgnoreCase("link")) {
-                            // Now just get the associated text
+
                             String temp = xpp.nextText();
-                            // Do something with text
+
                             if (alist.size() == 0) {
                                 return;
                             }
                             alist.get(alist.size() - 1).setLink(temp);
                         } else if (xpp.getName().equalsIgnoreCase("point")) {
-                            // Now just get the associated text
+
                             String temp = xpp.nextText();
-                            // Do something with text
+
 
                             if (alist.size() == 0) {
                                 return;
@@ -385,71 +430,74 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
 
     private class Task implements Runnable
     {
-        private String url;
+        private String[] url;
         private String feedType;
 
-        public Task(String aurl,String FeedType)
-        {
-            url = aurl;
-            feedType = FeedType;
+        public Task(String[] urlArray) {
+            url = urlArray;
         }
+
         @Override
         public void run()
         {
+            Log.d("TAG", "run: "+ url[0]);
 
-            URL aurl;
-            URLConnection yc;
-            BufferedReader in = null;
-            String inputLine = "";
+            for (int i = 0; i < url.length; i++) {
 
 
-            Log.e("MyTag","in run");
 
-            try
-            {
-                Log.e("MyTag","in try");
-                aurl = new URL(url);
-                yc = aurl.openConnection();
-                in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                Log.e("MyTag","after ready");
-                //
-                // Now read the data. Make sure that there are no specific hedrs
-                // in the data file that you need to ignore.
-                // The useful data that you need is in each of the item entries
-                //
+                URL aurl;
+                URLConnection yc;
+                BufferedReader in = null;
+                String inputLine = "";
 
-                while ((inputLine = in.readLine()) != null)
+                Log.e("MyTag","in run");
+
+                try
                 {
-                    result = result + inputLine;
+                    Log.e("MyTag","in try");
+                    aurl = new URL(url[i]);
+                    yc = aurl.openConnection();
+                    in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+                    Log.e("MyTag","after ready");
+                    //
+                    // Now read the data. Make sure that there are no specific hedrs
+                    // in the data file that you need to ignore.
+                    // The useful data that you need is in each of the item entries
+                    //
+
+                    while ((inputLine = in.readLine()) != null)
+                    {
+                        result = result + inputLine;
+
+                    }
+
+                    in.close();
 
                 }
+                catch (IOException ae)
+                {
+                    Log.e("MyTag", "ioexception in run");
+                }
 
-                in.close();
+                Log.d("TAG", "Got Data: " + result);
+
+                if(i == 0){
+                    parseData(result,"planned");
+                }
+                else if (i == 1){
+                    parseData(result,"current");
+                }
+                else if (i == 2){
+                    parseData(result,"roadworks");
+                }
+
 
             }
-            catch (IOException ae)
-            {
-                Log.e("MyTag", "ioexception in run");
-            }
-
-            Log.d("TAG", "Got Data: " + result);
-
-            if(feedType == "planned"){
-                parseData(result,"planned");
-            }else if (feedType == "current"){
-                parseData(result,"current");
-            }
-            else if (feedType == "roadworks"){
-                parseData(result,"roadworks");
-            }
-
-
-
 
             MainActivity.this.runOnUiThread(new Runnable()
             {
                 public void run() {
-                    Log.d("UI thread", "I am the UI thread");
 
                     FragmentManager manager = getFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
@@ -464,6 +512,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
 
                 }
             });
+
+
         }
 
     }

@@ -30,6 +30,8 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView title;
+        private TextView StartEndDatetv;
+        private TextView viewMoreBtn;
         private TextView description;
         private TextView link;
         private TextView georss;
@@ -41,10 +43,8 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             super(view);
             context = view.getContext();
             title = view.findViewById(R.id.feed_item_title);
-            description = view.findViewById(R.id.feed_item_description);
-            pubDate = view.findViewById(R.id.tvpubDate);
-            itemType = view.findViewById(R.id.tvitemtype);
-
+            StartEndDatetv = view.findViewById(R.id.StartEndDatetv);
+            viewMoreBtn = view.findViewById(R.id.viewMoreBtn);
 
 
         }
@@ -69,22 +69,10 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             Log.d(TAG, "onBindViewHolder: "+ itemTitle);
             holder.title.setText(itemTitle);
         }
-        if (itemList.get(position).getDescription() != null){
-            String itemDescription = itemList.get(position).getDescription().toString();
-            holder.description.setText(itemDescription);
-        }
 
+        holder.StartEndDatetv.setText( itemList.get(position).getStartDate().toString()+" - " + itemList.get(position).getEndDate().toString());
 
-        if (itemList.get(position).getPubDate() != null){
-            String itemPubDate = itemList.get(position).getPubDate();
-            holder.pubDate.setText(itemPubDate.toString());
-        }
-        if (itemList.get(position).getItemType() != null){
-            String itemTypestr = itemList.get(position).getItemType();
-            holder.itemType.setText(itemTypestr.toString());
-        }
-
-        holder.title.setOnClickListener( new View.OnClickListener()
+        holder.viewMoreBtn.setOnClickListener( new View.OnClickListener()
         {
             public void onClick(View view)
             {
@@ -96,6 +84,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                 context.startActivity(intent);
             }
         });
+
 
 
 

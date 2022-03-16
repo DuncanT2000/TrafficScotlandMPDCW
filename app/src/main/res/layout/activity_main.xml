@@ -11,10 +11,43 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/datepickerBTN"
+                    android:layout_width="166dp"
+                    android:layout_height="wrap_content"
+                    android:text="Set Date" />
+
+                <TextView
+                    android:id="@+id/setDateTV"
+                    android:layout_width="165dp"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textAlignment="center"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <FrameLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="683dp">
+
+        </FrameLayout>
 
 
     </LinearLayout>
