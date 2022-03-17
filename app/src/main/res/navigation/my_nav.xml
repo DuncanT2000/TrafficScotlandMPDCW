@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/journeyFragment"
+        android:name="com.example.trafficscotlandmpdcw.JourneyFragment"
+        android:label="fragment_journey"
+        tools:layout="@layout/fragment_journey" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.trafficscotlandmpdcw.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.trafficscotlandmpdcw.HomeFragment"
+        android:label="fragment_home2"
+        tools:layout="@layout/fragment_home2" />
+</navigation>

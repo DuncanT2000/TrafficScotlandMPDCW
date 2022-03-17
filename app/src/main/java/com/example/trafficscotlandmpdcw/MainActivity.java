@@ -1,8 +1,15 @@
 package com.example.trafficscotlandmpdcw;
 
+import static android.content.ContentValues.TAG;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -16,11 +23,16 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -30,15 +42,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements OnClickListener
+public class MainActivity extends AppCompatActivity implements OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
 {
 
     private LinearLayout itemLayout;
@@ -50,12 +66,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
     private String result = "";
     private String url1="";
     private Button datePickerBtn;
+    private Button searchBtn;
+    private Button journeyBtn;
     private LocalDate selectedDate;
     private TextView setDateTV;
+    private Spinner type_spinner;
+
     // Traffic Scotland Planned Roadworks XML link
-    private String urlSourceplanned = "https://trafficscotland.org/rss/feeds/plannedroadworks.aspx";
-    private String urlSourceCurrent = "https://trafficscotland.org/rss/feeds/currentincidents.aspx";
-    private String urlSourceRoadworks = "https://trafficscotland.org/rss/feeds/roadworks.aspx";
 
     private String[] urlArray = {"https://trafficscotland.org/rss/feeds/plannedroadworks.aspx",
             "https://trafficscotland.org/rss/feeds/currentincidents.aspx",
@@ -67,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
     private Fragment fr;
 
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,12 +93,32 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         setContentView(R.layout.activity_main);
         Log.e("MyTag","in onCreate");
         // Set up the raw links to the graphical components
-        itemLayout = (LinearLayout) findViewById(R.id.ItemLayout);
+        //itemLayout = (LinearLayout) findViewById(R.id.ItemLayout);
         Log.e("MyTag","after startButton");
 
-        datePickerBtn = findViewById(R.id.datepickerBTN);
-        setDateTV = findViewById(R.id.setDateTV);
 
+
+
+
+
+
+        datePickerBtn = findViewById(R.id.datepickerBTN);
+        searchBtn = findViewById(R.id.searchBtn);
+        journeyBtn = findViewById(R.id.journeyMap);
+
+        setDateTV = findViewById(R.id.setDateTV);
+        type_spinner = findViewById(R.id.type_spinner);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.itemType, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        type_spinner.setAdapter(adapter);
+
+        type_spinner.setOnItemSelectedListener(this);
+
+        datePickerBtn.setOnClickListener(this);
+        searchBtn.setOnClickListener(this);
+        journeyBtn.setOnClickListener(this);
 
 
         selectedDate = LocalDate.now();
@@ -99,24 +137,90 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         transaction.replace(R.id.fragment,fr);
         transaction.commit();
 
+
+        Log.d(TAG, "onCreate: "+ AllFeedInfo.size());
+
         startProgress();
+
 
     }
 
     public void startProgress()
     {
-        // Run network access on a separate thread;
+
         new Thread(new Task(urlArray)).start();
 
-    } //
+    }
+
+    public void startFilter( String type)
+    {
+        Log.d(TAG, "startFilter: "+ type);
+        if (AllFeedInfo.size()> 0){
+            new Thread(new FilterData(type)).start();
+        }
+
+
+    }
+
+    public void startFilterByDate(String type)
+    {
+
+        if (AllFeedInfo.size()> 0){
+            new Thread(new FilterDataByDate(type)).start();
+        }
+
+
+    }
+
 
 
     @Override
     public void onClick(View v)
     {
 
+        if (v == searchBtn){
+            Log.d(TAG, "onClick: User is looking to search");
+        }else if (v == journeyBtn) {
+            Log.d(TAG, "onClick: User is looking to open Journey Map");
+            }
+        else if (v == datePickerBtn) {
+            Log.d(TAG, "onClick: User is looking to open set a new date");
+            showDatePickerDialog();
+        }
+
     }
 
+
+    private void showDatePickerDialog(){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                this,
+                Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        datePickerDialog.show();
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+
+        selectedDate = LocalDate.of(year, month + 1, day);
+
+        setDateTV.setText(selectedDate.getYear()+ "-" + selectedDate.getMonthValue() + "-" + selectedDate.getDayOfMonth());
+
+        if (type_spinner.getSelectedItemId() == 0){
+            startFilterByDate("planned");
+        }
+        if (type_spinner.getSelectedItemId() == 1){
+            startFilterByDate("current");
+        }
+        if (type_spinner.getSelectedItemId() == 2){
+            startFilterByDate("roadworks");
+        }
+
+
+}
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseData(String dataToParse, String type) {
 
         if (type == "planned"){
@@ -156,18 +260,24 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
 
                             String[] desDetails = temp.split("<br />");
 
-
-
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
 
                             for (int i = 0; i < desDetails.length -1; i++) {
                                 switch (i){
                                     case 0:
                                         String[] startDate = desDetails[i].split("Start Date: ");
-                                        alist.get(alist.size() - 1).setStartDate(startDate[1]);
-                                    break;
+                                        String [] sdate = startDate[1].split("[,-]+");
+
+
+                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
+                                        alist.get(alist.size() - 1).setStartDate(date1.toString());
+                                        break;
                                     case 1:
                                         String[] endDate = desDetails[i].split("End Date: ");
-                                        alist.get(alist.size() - 1).setEndDate(endDate[1]);
+                                        String [] enddatenew = endDate[1].split("[,-]+");
+
+                                        LocalDate date2 = LocalDate.parse(enddatenew[1], formatter);
+                                        alist.get(alist.size() - 1).setEndDate(date2.toString());
                                         break;
                                 }
 
@@ -265,7 +375,31 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
                                 return;
                             }
 
-                            String[] desDetails = temp.split("</br>");
+                            String[] desDetails = temp.split("<br />");
+
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
+
+                            for (int i = 0; i < desDetails.length -1; i++) {
+                                switch (i){
+                                    case 0:
+                                        String[] startDate = desDetails[i].split("Start Date: ");
+                                        String [] sdate = startDate[1].split("[,-]+");
+
+
+                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
+                                        currentincidents.get(currentincidents.size() - 1).setStartDate(date1.toString());
+                                        break;
+                                    case 1:
+                                        String[] endDate = desDetails[i].split("End Date: ");
+                                        String [] enddatenew = endDate[1].split("[,-]+");
+
+                                        LocalDate date2 = LocalDate.parse(enddatenew[1], formatter);
+                                        currentincidents.get(currentincidents.size() - 1).setEndDate(date2.toString());
+                                        break;
+                                }
+
+                            }
 
                             currentincidents.get(currentincidents.size() - 1).setDescription(temp);
 
@@ -359,7 +493,30 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
                                 return;
                             }
 
-                            String[] desDetails = temp.split("</br>");
+                            String[] desDetails = temp.split("<br />");
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
+
+                            for (int i = 0; i < desDetails.length -1; i++) {
+                                switch (i){
+                                    case 0:
+                                        String[] startDate = desDetails[i].split("Start Date: ");
+                                        String [] sdate = startDate[1].split("[,-]+");
+
+
+                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setStartDate(date1.toString());
+                                        break;
+                                    case 1:
+                                        String[] endDate = desDetails[i].split("End Date: ");
+                                        String [] enddatenew = endDate[1].split("[,-]+");
+
+                                        LocalDate date2 = LocalDate.parse(enddatenew[1], formatter);
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setEndDate(date2.toString());
+                                        break;
+                                }
+
+                            }
 
                             roadworksincidents.get(roadworksincidents.size() - 1).setDescription(temp);
 
@@ -426,6 +583,28 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+
+        if (i == 0){
+            startFilter("planned");
+        }
+        if (i == 1){
+            startFilter("current");
+        }
+        if (i == 2){
+            startFilter("roadworks");
+        }
+
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 
 
     private class Task implements Runnable
@@ -437,14 +616,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
             url = urlArray;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void run()
         {
             Log.d("TAG", "run: "+ url[0]);
 
             for (int i = 0; i < url.length; i++) {
-
-
 
                 URL aurl;
                 URLConnection yc;
@@ -519,6 +697,131 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
     }
 
 
+    private class FilterData implements Runnable
+    {
+        private String feedType;
+
+        public FilterData(String FeedType) {
+            feedType = FeedType;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public void run()
+        {
+
+            Log.d(TAG, "run:  New Thread Running");
+
+            FilteredFeedInfo = new ArrayList<Item>();
+
+            for (int i = 0; i < AllFeedInfo.size(); i++) {
+                LocalDate pickedLDate = LocalDate.parse(setDateTV.getText().toString());
+                LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+
+
+
+                if (AllFeedInfo.get(i).getItemType() == feedType && (pickedDate.equals(startDate) ||  pickedDate.equals(endDate) || pickedDate.after(startDate) && pickedDate.before(endDate))){
+                    FilteredFeedInfo.add(AllFeedInfo.get(i));
+                }
+            }
+
+
+            MainActivity.this.runOnUiThread(new Runnable()
+            {
+                public void run() {
+
+                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
+                    Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
+                    FragmentManager manager = getFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+
+                    frFeed = new FragmentFeedData();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("feedData", FilteredFeedInfo);
+                    frFeed.setArguments(bundle);
+                    transaction.replace(R.id.fragment,frFeed);
+                    transaction.commit();
+
+
+
+                }
+            });
+
+
+        }
+
+    }
+
+    private class FilterDataByDate implements Runnable
+    {
+
+        private String feedType;
+
+        public FilterDataByDate(String FeedType) {
+            feedType = FeedType;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public void run()
+        {
+
+            Log.d(TAG, "run:  New Thread Running");
+            FilteredFeedInfo = new ArrayList<Item>();
+
+
+            for (int i = 0; i < AllFeedInfo.size(); i++) {
+                LocalDate pickedLDate = selectedDate;
+                LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+
+                if (AllFeedInfo.get(i).getItemType() == feedType && (pickedDate.equals(startDate) ||  pickedDate.equals(endDate) || pickedDate.after(startDate) && pickedDate.before(endDate))){
+                    FilteredFeedInfo.add(AllFeedInfo.get(i));
+                }
+
+
+
+            }
+
+
+            MainActivity.this.runOnUiThread(new Runnable()
+            {
+                public void run() {
+
+                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
+                    Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
+                    FragmentManager manager = getFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+
+                    frFeed = new FragmentFeedData();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("feedData", FilteredFeedInfo);
+                    frFeed.setArguments(bundle);
+                    transaction.replace(R.id.fragment,frFeed);
+                    transaction.commit();
+
+
+
+                }
+            });
+
+
+        }
+
+    }
 
 
 

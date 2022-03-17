@@ -12,7 +12,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="277dp"
+            android:layout_width="246dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -26,20 +26,45 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:layout_editor_absoluteY="34dp" />
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="3dp" />
+
             <TextView
                 android:id="@+id/StartEndDatetv"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:text="TextView"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/reasontv"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TextView"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/viewMoreBtn"
-            android:layout_width="162dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Button" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/viewMoreBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="View More" />
+
+            <TextView
+                android:id="@+id/typeTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView"
+                android:textAlignment="center" />
+        </LinearLayout>
 
     </LinearLayout>
 

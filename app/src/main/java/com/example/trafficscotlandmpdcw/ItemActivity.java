@@ -19,9 +19,9 @@ public class ItemActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_item);
 
         addToJourneyBTN = findViewById(R.id.addToJourneyBTN);
+        
 
-        Item item = getIntent().getExtras().getParcelable("itemData");
-
+        /*
         MapFragment fragment = new MapFragment();
         Bundle bundle = new Bundle();
         bundle.putString("itemLat", item.getLatStr());
@@ -33,9 +33,7 @@ public class ItemActivity extends AppCompatActivity implements View.OnClickListe
                 .replace(R.id.map_fragment,fragment)
                  .commit();
 
-
-
-        Log.d("Passing Item Data", "onCreate: " +item.getTitle());
+        */
 
         addToJourneyBTN.setOnClickListener(this);
 
