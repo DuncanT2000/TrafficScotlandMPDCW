@@ -18,22 +18,12 @@ public class ItemActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
 
+        int itemPos = getIntent().getIntExtra("itemPos", 0);
+
+
+
         addToJourneyBTN = findViewById(R.id.addToJourneyBTN);
-        
 
-        /*
-        MapFragment fragment = new MapFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("itemLat", item.getLatStr());
-        bundle.putString("itemLong", item.getLongStr());
-        fragment.setArguments(bundle);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.map_fragment,fragment)
-                 .commit();
-
-        */
 
         addToJourneyBTN.setOnClickListener(this);
 

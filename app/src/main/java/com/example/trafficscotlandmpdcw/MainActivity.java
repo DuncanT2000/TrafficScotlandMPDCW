@@ -15,9 +15,9 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -73,13 +73,17 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity implements OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
 {
 
+    public static FeedData feedData = new FeedData();
+    public static FeedData JourneyData = new FeedData();
+
+    public static View pageFragment;
     private LinearLayout itemLayout;
     private ArrayList<Item> alist;
     private ArrayList<Item> currentincidents;
     private ArrayList<Item> roadworksincidents;
     private ArrayList<Item> AllFeedInfo = new ArrayList<Item>();
     private ArrayList<Item> FilteredFeedInfo = new ArrayList<Item>();
-    private ArrayList<Item> journeyItems;
+    private ArrayList<Item> journeyItems = new ArrayList<Item>();
     private String result = "";
     private String url1="";
     private Button datePickerBtn;
@@ -105,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private Fragment fr;
 
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -118,25 +123,28 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         setSupportActionBar(mytoolBar);
 
 
-        fr1 = new FragmentOne();
+        pageFragment = findViewById(R.id.pageFragment);
+
+        JourneyData.setFeedInfoArray(journeyItems);
+
+
         frFeed = new FragmentFeedData();
 
-        fr = fr1;
 
-        FragmentManager manager = getFragmentManager();
+        FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
         HomeFragment homeFrag = new HomeFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("feedData", AllFeedInfo);
+        bundle.putSerializable("feedData", feedData.getFeedInfoArray());
         homeFrag.setArguments(bundle);
 
         transaction.replace(R.id.pageFragment, homeFrag);
         transaction.commit();
 
 
-        Log.d(TAG, "onCreate: "+ AllFeedInfo.size());
+        Log.d(TAG, "onCreate: "+ feedData.getFeedInfoArray().size());
 
         startProgress();
 
@@ -160,25 +168,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     }
 
-    public void startFilter( String type)
-    {
-        Log.d(TAG, "startFilter: "+ type);
-        if (AllFeedInfo.size()> 0){
-            new Thread(new FilterData(type)).start();
-        }
 
 
-    }
-
-    public void startFilterByDate(String type)
-    {
-
-        if (AllFeedInfo.size()> 0){
-            new Thread(new FilterDataByDate(type)).start();
-        }
-
-
-    }
 
 
 
@@ -203,26 +194,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
         datePickerDialog.show();
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
-        selectedDate = LocalDate.of(year, month + 1, day);
-
-        setDateTV.setText(selectedDate.getYear()+ "-" + selectedDate.getMonthValue() + "-" + selectedDate.getDayOfMonth());
-
-        if (type_spinner.getSelectedItemId() == 0){
-            startFilterByDate("planned");
-        }
-        if (type_spinner.getSelectedItemId() == 1){
-            startFilterByDate("current");
-        }
-        if (type_spinner.getSelectedItemId() == 2){
-            startFilterByDate("roadworks");
-        }
-
-
-}
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseData(String dataToParse, String type) {
@@ -265,7 +237,6 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                             String[] desDetails = temp.split("<br />");
 
 
-
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
 
                             for (int i = 0; i < desDetails.length -1; i++) {
@@ -289,9 +260,6 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                                 }
 
                                 if (desDetails[2] != null){
-                                    Log.d(TAG, "parseData: " + desDetails[2]);
-
-
 
                                     Pattern workPattern = Pattern.compile("(?<=Works:)(.*)(?=Traffic Management:)");
                                     Matcher workmatcher = workPattern.matcher(desDetails[2]);
@@ -321,15 +289,10 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                                     }
 
 
-
-                                    alist.get(alist.size() - 1).setReason(desDetails[2]);
-
                                 }
 
 
                             }
-
-                            alist.get(alist.size() - 1).setDescription(temp);
 
                         } else if (xpp.getName().equalsIgnoreCase("link")) {
 
@@ -380,6 +343,13 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             alist.remove(0);
 
             for (int i = 0; i < alist.size(); i++) {
+
+                Log.d(TAG, "hasWork: " + (alist.get(i).getWork() != null));
+
+                if (alist.get(i).getWork() == null){
+                    alist.remove(i);
+                }
+
                 alist.get(i).setItemType("planned");
             }
 
@@ -419,39 +389,6 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                             // Do something with text
                             if (currentincidents.size() == 0) {
                                 return;
-                            }
-
-                            String[] desDetails = temp.split("<br />");
-
-
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
-
-                            for (int i = 0; i < desDetails.length -1; i++) {
-
-                                switch (i){
-                                    case 0:
-                                        String[] startDate = desDetails[i].split("Start Date: ");
-                                        String [] sdate = startDate[1].split("[,-]+");
-
-
-                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
-                                        currentincidents.get(currentincidents.size() - 1).setStartDate(date1.toString());
-                                        break;
-                                    case 1:
-                                        String[] endDate = desDetails[i].split("End Date: ");
-                                        String [] enddatenew = endDate[1].split("[,-]+");
-
-                                        LocalDate date2 = LocalDate.parse(enddatenew[1], formatter);
-                                        currentincidents.get(currentincidents.size() - 1).setEndDate(date2.toString());
-                                        break;
-                                }
-
-                                if (desDetails[2] != null){
-                                    currentincidents.get(currentincidents.size() - 1).setReason(desDetails[2]);
-
-                                }
-
-
                             }
 
                             currentincidents.get(currentincidents.size() - 1).setDescription(temp);
@@ -505,12 +442,14 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             currentincidents.remove(0);
 
             for (int i = 0; i < currentincidents.size(); i++) {
+                Log.d(TAG, "parseData: " + currentincidents.get(i).getDescription());
                 currentincidents.get(i).setItemType("current");
             }
 
             AllFeedInfo.addAll(currentincidents);
 
         }
+
         else if (type == "roadworks"){
             roadworksincidents = new ArrayList<Item>();
             try {
@@ -550,33 +489,67 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
 
-                            for (int i = 0; i < desDetails.length -1; i++) {
-                                switch (i){
-                                    case 0:
+
+                            for (int i = 0; i < desDetails.length; i++) {
+
+                                if (desDetails.length == 2){
+                                    if (desDetails[0] != null && i == 0){
+
                                         String[] startDate = desDetails[i].split("Start Date: ");
                                         String [] sdate = startDate[1].split("[,-]+");
 
+                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
+
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setStartDate(date1.toString());
+
+                                    }
+                                    if (desDetails[1] != null && i == 1){
+
+                                        String[] endDate = desDetails[i].split("End Date: ");
+
+                                        String [] sdate = endDate[1].split("[,-]+");
 
                                         LocalDate date1 = LocalDate.parse(sdate[1], formatter);
-                                        roadworksincidents.get(roadworksincidents.size() - 1).setStartDate(date1.toString());
-                                        break;
-                                    case 1:
-                                        String[] endDate = desDetails[i].split("End Date: ");
-                                        String [] enddatenew = endDate[1].split("[,-]+");
 
-                                        LocalDate date2 = LocalDate.parse(enddatenew[1], formatter);
-                                        roadworksincidents.get(roadworksincidents.size() - 1).setEndDate(date2.toString());
-                                        break;
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setEndDate(date1.toString());
+
+                                    }
                                 }
+                                if (desDetails.length == 3){
+                                    if (desDetails[0] != null && i == 0){
 
-                                if (desDetails[2] != null){
-                                    roadworksincidents.get(roadworksincidents.size() - 1).setReason(desDetails[2]);
+                                        String[] startDate = desDetails[i].split("Start Date: ");
+                                        String [] sdate = startDate[1].split("[,-]+");
 
+                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
+
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setStartDate(date1.toString());
+
+                                    }
+                                    if (desDetails[1] != null && i == 1){
+
+
+                                        String[] endDate = desDetails[i].split("End Date: ");
+
+                                        String [] sdate = endDate[1].split("[,-]+");
+
+                                        LocalDate date1 = LocalDate.parse(sdate[1], formatter);
+
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setEndDate(date1.toString());
+                                    }
+                                    if (desDetails[2] != null){
+
+
+                                        String[] DelayInfo = desDetails[2].split("Delay Information: ");
+
+                                        String DelayInfoStr = DelayInfo[1];
+
+
+                                        roadworksincidents.get(roadworksincidents.size() - 1).setDelayInformation(DelayInfoStr);
+                                    }
                                 }
 
                             }
-
-                            roadworksincidents.get(roadworksincidents.size() - 1).setDescription(temp);
 
                         } else if (xpp.getName().equalsIgnoreCase("link")) {
                             // Now just get the associated text
@@ -623,10 +596,13 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 Log.e("MyTag", "IO error during parsing");
             }
 
-
             roadworksincidents.remove(0);
 
             for (int i = 0; i < roadworksincidents.size(); i++) {
+
+                if (roadworksincidents.get(i).getDelayInformation() == null){
+                    roadworksincidents.get(i).setDelayInformation("No reported delay.");
+                }
                 roadworksincidents.get(i).setItemType("roadworks");
             }
 
@@ -638,21 +614,9 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
     }
 
+
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-
-
-        if (i == 0){
-            startFilter("planned");
-        }
-        if (i == 1){
-            startFilter("current");
-        }
-        if (i == 2){
-            startFilter("roadworks");
-        }
-
 
     }
 
@@ -668,14 +632,16 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
         if (item.getItemId() == R.id.nav_home){
 
-            FragmentManager manager = getFragmentManager();
+            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
 
 
             HomeFragment homeFrag = new HomeFragment();
 
+            feedData.setFeedInfoArray(AllFeedInfo);
+
             Bundle bundle = new Bundle();
-            bundle.putSerializable("feedData", AllFeedInfo);
+            bundle.putSerializable("feedData", feedData.getFeedInfoArray());
             homeFrag.setArguments(bundle);
 
             transaction.replace(R.id.pageFragment, homeFrag);
@@ -685,13 +651,15 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         }
 
         if (item.getItemId() == R.id.nav_search){
-            FragmentManager manager = getFragmentManager();
+            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
 
             SearchFragment sf = new SearchFragment();
 
+            feedData.setFeedInfoArray(AllFeedInfo);
+
             Bundle bundle = new Bundle();
-            bundle.putSerializable("feedData", AllFeedInfo);
+            bundle.putSerializable("feedData", feedData.getFeedInfoArray());
             sf.setArguments(bundle);
 
             transaction.replace(R.id.pageFragment, sf);
@@ -700,7 +668,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
         if (item.getItemId() == R.id.nav_journey){
 
-            FragmentManager manager = getFragmentManager();
+            FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
 
             transaction.replace(R.id.pageFragment, new JourneyFragment());
@@ -710,6 +678,11 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
 
         return true;
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+
     }
 
 
@@ -734,6 +707,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 URLConnection yc;
                 BufferedReader in = null;
                 String inputLine = "";
+                result = "";
 
                 Log.e("MyTag","in run");
 
@@ -770,6 +744,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                     parseData(result,"planned");
                 }
                 else if (i == 1){
+                    Log.d(TAG, "run: " + result);
                     parseData(result,"current");
                 }
                 else if (i == 2){
@@ -783,14 +758,16 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             {
                 public void run() {
 
-                    FragmentManager manager = getFragmentManager();
+                    FragmentManager manager = getSupportFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
 
 
                     HomeFragment homeFrag = new HomeFragment();
 
+                    feedData.setFeedInfoArray(AllFeedInfo);
+
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("feedData", AllFeedInfo);
+                    bundle.putSerializable("feedData", feedData.getFeedInfoArray());
                     homeFrag.setArguments(bundle);
 
                     transaction.replace(R.id.pageFragment, homeFrag);
@@ -805,132 +782,6 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         }
 
     }
-
-
-    private class FilterData implements Runnable
-    {
-        private String feedType;
-
-        public FilterData(String FeedType) {
-            feedType = FeedType;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void run()
-        {
-
-            Log.d(TAG, "run:  New Thread Running");
-
-            FilteredFeedInfo = new ArrayList<Item>();
-
-            for (int i = 0; i < AllFeedInfo.size(); i++) {
-                LocalDate pickedLDate = selectedDate;
-                LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
-                LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
-
-                Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
-                Date startDate = java.sql.Date.valueOf(startLDate.toString());
-                Date endDate = java.sql.Date.valueOf(endLDate.toString());
-
-
-
-
-                if (AllFeedInfo.get(i).getItemType() == feedType && (pickedDate.equals(startDate) ||  pickedDate.equals(endDate) || pickedDate.after(startDate) && pickedDate.before(endDate))){
-                    FilteredFeedInfo.add(AllFeedInfo.get(i));
-                }
-            }
-
-
-            MainActivity.this.runOnUiThread(new Runnable()
-            {
-                public void run() {
-
-                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
-                    Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
-                    FragmentManager manager = getFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
-
-                    frFeed = new FragmentFeedData();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("feedData", FilteredFeedInfo);
-                    frFeed.setArguments(bundle);
-                    transaction.replace(R.id.pageFragment,frFeed);
-                    transaction.commit();
-
-
-
-                }
-            });
-
-
-        }
-
-    }
-
-    private class FilterDataByDate implements Runnable
-    {
-
-        private String feedType;
-
-        public FilterDataByDate(String FeedType) {
-            feedType = FeedType;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void run()
-        {
-
-            Log.d(TAG, "run:  New Thread Running");
-            FilteredFeedInfo = new ArrayList<Item>();
-
-
-            for (int i = 0; i < AllFeedInfo.size(); i++) {
-                LocalDate pickedLDate = selectedDate;
-                LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
-                LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
-
-                Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
-                Date startDate = java.sql.Date.valueOf(startLDate.toString());
-                Date endDate = java.sql.Date.valueOf(endLDate.toString());
-
-
-                if (AllFeedInfo.get(i).getItemType() == feedType && (pickedDate.equals(startDate) ||  pickedDate.equals(endDate) || pickedDate.after(startDate) && pickedDate.before(endDate))){
-                    FilteredFeedInfo.add(AllFeedInfo.get(i));
-                }
-
-            }
-
-
-            MainActivity.this.runOnUiThread(new Runnable()
-            {
-                public void run() {
-
-                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
-                    Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
-                    FragmentManager manager = getFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
-
-                    frFeed = new FragmentFeedData();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("feedData", FilteredFeedInfo);
-                    frFeed.setArguments(bundle);
-                    transaction.replace(R.id.pageFragment,frFeed);
-                    transaction.commit();
-
-
-
-                }
-            });
-
-
-        }
-
-    }
-
 
 
 

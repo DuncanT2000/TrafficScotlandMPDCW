@@ -3,12 +3,8 @@ package com.example.trafficscotlandmpdcw.Fragments;
 import static android.content.ContentValues.TAG;
 
 import android.app.DatePickerDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Build;
 import android.os.Bundle;
-
-import android.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +18,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.trafficscotlandmpdcw.FragmentFeedData;
 import com.example.trafficscotlandmpdcw.Item;
@@ -34,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class HomeOptionsFragment extends Fragment  implements View.OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
+public class HomeOptionsFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
 
 {
 
@@ -61,8 +60,10 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home_options, container, false);
 
+        AllFeedInfo = MainActivity.feedData.getFeedInfoArray();
 
 
+        Log.d(TAG, "AllFeedInfo Size: " + AllFeedInfo.size());
 
         datePickerBtn = view.findViewById(R.id.datepickerBTN);
 
@@ -78,7 +79,6 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
 
         datePickerBtn.setOnClickListener(this);
 
-
         selectedDate = LocalDate.now();
 
         setDateTV.setText(selectedDate.toString());
@@ -92,20 +92,7 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
         if (AllFeedInfo.size()> 0){
             new Thread(new FilterData(type)).start();
         }
-
-
     }
-
-    public void startFilterByDate(String type)
-    {
-
-        if (AllFeedInfo.size()> 0){
-            new Thread(new FilterDataByDate(type)).start();
-        }
-
-
-    }
-
 
 
     @Override
@@ -118,7 +105,6 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
         }
 
     }
-
 
     private void showDatePickerDialog(){
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
@@ -140,13 +126,13 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
         setDateTV.setText(selectedDate.getYear()+ "-" + selectedDate.getMonthValue() + "-" + selectedDate.getDayOfMonth());
 
         if (type_spinner.getSelectedItemId() == 0){
-            //startFilterByDate("planned");
+            startFilter("planned");
         }
         if (type_spinner.getSelectedItemId() == 1){
-            //startFilterByDate("current");
+            startFilter("current");
         }
         if (type_spinner.getSelectedItemId() == 2){
-            //startFilterByDate("roadworks");
+            startFilter("roadworks");
         }
 
 
@@ -190,27 +176,38 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
         public void run()
         {
 
-            Log.d(TAG, "run:  New Thread Running");
-
             FilteredFeedInfo = new ArrayList<Item>();
+            Log.d(TAG, "run:  New Thread Running");
+            Log.d(TAG, "run: " + FilteredFeedInfo.size());
 
-            for (int i = 0; i < AllFeedInfo.size(); i++) {
+            for (int i = 0; i < MainActivity.feedData.getFeedInfoArray().size(); i++) {
                 LocalDate pickedLDate = selectedDate;
-                LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
-                LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
 
-                Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
-                Date startDate = java.sql.Date.valueOf(startLDate.toString());
-                Date endDate = java.sql.Date.valueOf(endLDate.toString());
-
-
-
-
-                if (AllFeedInfo.get(i).getItemType() == feedType && (pickedDate.equals(startDate) ||  pickedDate.equals(endDate) || pickedDate.after(startDate) && pickedDate.before(endDate))){
+                if (AllFeedInfo.get(i).getItemType() == feedType){
                     FilteredFeedInfo.add(AllFeedInfo.get(i));
+
                 }
+
+                /*
+
+                if (AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
+                    LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                    LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                    Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                    Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                    Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+                    if (AllFeedInfo.get(i).getItemType() == feedType){
+                        FilteredFeedInfo.add(AllFeedInfo.get(i));
+                    }
+
+                }
+
+                */
             }
 
+            Log.d(TAG, "run: " + FilteredFeedInfo.size());
 
             getActivity().runOnUiThread(new Runnable()
             {
@@ -218,9 +215,19 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
 
                     Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
                     Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
-                    FragmentManager manager = getFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
 
+                    Log.d(TAG, "run: " + FilteredFeedInfo.size());
+
+                    androidx.fragment.app.FragmentManager manager = getFragmentManager();
+                    androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
+
+                    FragmentFeedData frFeed = new FragmentFeedData();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("feedData", FilteredFeedInfo);
+                    frFeed.setArguments(bundle);
+                    transaction.replace(HomeFragment.contentFragment.getId(),frFeed);
+                    transaction.commit();
 
 
 
@@ -233,60 +240,6 @@ public class HomeOptionsFragment extends Fragment  implements View.OnClickListen
 
     }
 
-    private class FilterDataByDate implements Runnable
-    {
-
-        private String feedType;
-
-        public FilterDataByDate(String FeedType) {
-            feedType = FeedType;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void run()
-        {
-
-            Log.d(TAG, "run:  New Thread Running");
-            FilteredFeedInfo = new ArrayList<Item>();
-
-
-            for (int i = 0; i < AllFeedInfo.size(); i++) {
-                LocalDate pickedLDate = selectedDate;
-                LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
-                LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
-
-                Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
-                Date startDate = java.sql.Date.valueOf(startLDate.toString());
-                Date endDate = java.sql.Date.valueOf(endLDate.toString());
-
-
-                if (AllFeedInfo.get(i).getItemType() == feedType && (pickedDate.equals(startDate) ||  pickedDate.equals(endDate) || pickedDate.after(startDate) && pickedDate.before(endDate))){
-                    FilteredFeedInfo.add(AllFeedInfo.get(i));
-                }
-
-
-
-            }
-
-
-            getActivity().runOnUiThread(new Runnable()
-            {
-                public void run() {
-
-                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
-                    Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
-
-
-
-
-                }
-            });
-
-
-        }
-
-    }
 
 
 

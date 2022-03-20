@@ -44,11 +44,26 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/reasontv"
+                android:id="@+id/worktv"
                 android:layout_width="match_parent"
-                android:layout_height="115dp"
+                android:layout_height="37dp"
                 android:text="TextView"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/trafficMantv"
+                android:layout_width="match_parent"
+                android:layout_height="41dp"
+                android:text="TextView"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/reasontv"
+                android:layout_width="match_parent"
+                android:layout_height="41dp"
+                android:text="TextView"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
         <LinearLayout
