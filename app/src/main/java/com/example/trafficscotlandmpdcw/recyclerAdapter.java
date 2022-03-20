@@ -79,7 +79,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         if (itemList.get(position).getTitle() != null){
             String itemTitle = itemList.get(position).getTitle().toString();
             Log.d(TAG, "onBindViewHolder: "+ itemTitle);
-            holder.title.setText(itemTitle);
+            holder.title.setText("Title: " + itemTitle);
         }
 
         holder.StartEndDatetv.setText( itemList.get(position).getStartDate().toString()+" - " + itemList.get(position).getEndDate().toString());
@@ -89,7 +89,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
         holder.itemType.setText(itemList.get(position).getItemType());
 
-        holder.reasontv.setText(itemList.get(position).getReason());
+        holder.reasontv.setText("Reason:" +itemList.get(position).getReason());
 
 
         long days = DAYS.between(startDate, endDate);
@@ -103,6 +103,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             holder.viewMoreBtn.setBackgroundColor(context.getResources().getColor(R.color.red));
         }
 
+
         holder.viewMoreBtn.setText("View More");
 
         holder.viewMoreBtn.setOnClickListener( new View.OnClickListener()
@@ -110,20 +111,9 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             public void onClick(View view)
             {
 
-                showMoreInfoFragment();
-
 
             }
-            public void showMoreInfoFragment(){
 
-                Intent intent = new Intent(context, ItemActivity.class);
-
-
-                context.startActivity(intent);
-
-
-
-            }
 
         });
 

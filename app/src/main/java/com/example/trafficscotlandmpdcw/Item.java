@@ -19,6 +19,11 @@ public class Item implements Parcelable {
     private String longStr;
     private String pubDate;
     private String itemType;
+    private String Work;
+    private String Location;
+    private String TrafficManagement;
+    private String DiversionInformation;
+    private String DelayInformation;
 
 
     protected Item(Parcel in) {
@@ -146,6 +151,48 @@ public class Item implements Parcelable {
 
     public void setLongStr(String longStr) {
         this.longStr = longStr;
+    }
+
+    public String getWork() {
+        return Work;
+    }
+
+    public void setWork(String work) {
+        Work = work;
+    }
+
+    public String getLocation() {
+        return Location;
+    }
+
+    public void setLocation(String location) {
+        Location = location;
+    }
+
+    public String getTrafficManagement() {
+        return TrafficManagement;
+    }
+
+
+
+    public String getDelayInformation() {
+        return DelayInformation;
+    }
+
+    public void setDelayInformation(String delayInformation) {
+        DelayInformation = delayInformation;
+    }
+
+    public String getDiversionInformation() {
+        return DiversionInformation;
+    }
+
+    public void setDiversionInformation(String diversionInformation) {
+        DiversionInformation = diversionInformation;
+    }
+
+    public void setTrafficManagement(String trafficManagement) {
+        TrafficManagement = trafficManagement;
     }
 
     public String toString() {

@@ -5,7 +5,9 @@ import static android.content.ContentValues.TAG;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -16,11 +18,17 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -28,10 +36,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.trafficscotlandmpdcw.Fragments.HomeFragment;
+import com.example.trafficscotlandmpdcw.Fragments.HomeOptionsFragment;
+import com.example.trafficscotlandmpdcw.Fragments.JourneyFragment;
+import com.example.trafficscotlandmpdcw.Fragments.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -53,6 +67,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
 {
@@ -63,14 +79,18 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private ArrayList<Item> roadworksincidents;
     private ArrayList<Item> AllFeedInfo = new ArrayList<Item>();
     private ArrayList<Item> FilteredFeedInfo = new ArrayList<Item>();
+    private ArrayList<Item> journeyItems;
     private String result = "";
     private String url1="";
     private Button datePickerBtn;
-    private Button searchBtn;
-    private Button journeyBtn;
+
     private LocalDate selectedDate;
     private TextView setDateTV;
     private Spinner type_spinner;
+
+    private PopupMenu popupMenu;
+    private Toolbar mytoolBar;
+
 
     // Traffic Scotland Planned Roadworks XML link
 
@@ -80,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     private Fragment fr1;
     private Fragment frFeed;
+    private Fragment frHome;
 
     private Fragment fr;
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -92,39 +112,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.e("MyTag","in onCreate");
-        // Set up the raw links to the graphical components
-        //itemLayout = (LinearLayout) findViewById(R.id.ItemLayout);
-        Log.e("MyTag","after startButton");
 
 
-
-
-
-
-
-        datePickerBtn = findViewById(R.id.datepickerBTN);
-        searchBtn = findViewById(R.id.searchBtn);
-        journeyBtn = findViewById(R.id.journeyMap);
-
-        setDateTV = findViewById(R.id.setDateTV);
-        type_spinner = findViewById(R.id.type_spinner);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.itemType, android.R.layout.simple_spinner_item);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        type_spinner.setAdapter(adapter);
-
-        type_spinner.setOnItemSelectedListener(this);
-
-        datePickerBtn.setOnClickListener(this);
-        searchBtn.setOnClickListener(this);
-        journeyBtn.setOnClickListener(this);
-
-
-        selectedDate = LocalDate.now();
-
-        setDateTV.setText(selectedDate.toString());
-
+        mytoolBar =  findViewById(R.id.my_tool_bar);
+        setSupportActionBar(mytoolBar);
 
 
         fr1 = new FragmentOne();
@@ -134,7 +125,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.fragment,fr);
+
+        HomeFragment homeFrag = new HomeFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("feedData", AllFeedInfo);
+        homeFrag.setArguments(bundle);
+
+        transaction.replace(R.id.pageFragment, homeFrag);
         transaction.commit();
 
 
@@ -144,6 +142,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
 
     public void startProgress()
     {
@@ -178,12 +186,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     public void onClick(View v)
     {
 
-        if (v == searchBtn){
-            Log.d(TAG, "onClick: User is looking to search");
-        }else if (v == journeyBtn) {
-            Log.d(TAG, "onClick: User is looking to open Journey Map");
-            }
-        else if (v == datePickerBtn) {
+
+        if (v == datePickerBtn) {
             Log.d(TAG, "onClick: User is looking to open set a new date");
             showDatePickerDialog();
         }
@@ -260,6 +264,8 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
                             String[] desDetails = temp.split("<br />");
 
+
+
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
 
                             for (int i = 0; i < desDetails.length -1; i++) {
@@ -279,7 +285,47 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                                         LocalDate date2 = LocalDate.parse(enddatenew[1], formatter);
                                         alist.get(alist.size() - 1).setEndDate(date2.toString());
                                         break;
+
                                 }
+
+                                if (desDetails[2] != null){
+                                    Log.d(TAG, "parseData: " + desDetails[2]);
+
+
+
+                                    Pattern workPattern = Pattern.compile("(?<=Works:)(.*)(?=Traffic Management:)");
+                                    Matcher workmatcher = workPattern.matcher(desDetails[2]);
+                                    if (workmatcher.find())
+                                    {
+                                        alist.get(alist.size() - 1).setWork(workmatcher.group(1));
+                                    }
+
+                                    Pattern trafficPatternNoDiver = Pattern.compile("(?<=Traffic Management:)(.*)");
+                                    Pattern trafficPattern = Pattern.compile("(?<=Traffic Management:)(.*)(?=Diversion Information:)");
+                                    Matcher Trafficmatcher = trafficPattern.matcher(desDetails[2]);
+                                    Matcher TrafficmatcherNoDiver = trafficPatternNoDiver.matcher(desDetails[2]);
+                                    if (Trafficmatcher.find())
+                                    {
+                                        alist.get(alist.size() - 1).setTrafficManagement(Trafficmatcher.group(1));
+                                    }
+
+                                    if (TrafficmatcherNoDiver.find()){
+                                        alist.get(alist.size() - 1).setTrafficManagement(TrafficmatcherNoDiver.group(1));
+                                    }
+
+                                    Pattern diversionPattern = Pattern.compile("(?<=Diversion Information:)(.*)");
+                                    Matcher diversionmatcher = diversionPattern.matcher(desDetails[2]);
+                                    if (diversionmatcher.find())
+                                    {
+                                        alist.get(alist.size() - 1).setDiversionInformation(diversionmatcher.group(1));
+                                    }
+
+
+
+                                    alist.get(alist.size() - 1).setReason(desDetails[2]);
+
+                                }
+
 
                             }
 
@@ -381,6 +427,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
 
                             for (int i = 0; i < desDetails.length -1; i++) {
+
                                 switch (i){
                                     case 0:
                                         String[] startDate = desDetails[i].split("Start Date: ");
@@ -398,6 +445,12 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                                         currentincidents.get(currentincidents.size() - 1).setEndDate(date2.toString());
                                         break;
                                 }
+
+                                if (desDetails[2] != null){
+                                    currentincidents.get(currentincidents.size() - 1).setReason(desDetails[2]);
+
+                                }
+
 
                             }
 
@@ -516,6 +569,11 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                                         break;
                                 }
 
+                                if (desDetails[2] != null){
+                                    roadworksincidents.get(roadworksincidents.size() - 1).setReason(desDetails[2]);
+
+                                }
+
                             }
 
                             roadworksincidents.get(roadworksincidents.size() - 1).setDescription(temp);
@@ -578,9 +636,6 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
 
 
-
-
-
     }
 
     @Override
@@ -604,6 +659,57 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == R.id.nav_home){
+
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+
+
+            HomeFragment homeFrag = new HomeFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("feedData", AllFeedInfo);
+            homeFrag.setArguments(bundle);
+
+            transaction.replace(R.id.pageFragment, homeFrag);
+            transaction.commit();
+
+
+        }
+
+        if (item.getItemId() == R.id.nav_search){
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+
+            SearchFragment sf = new SearchFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("feedData", AllFeedInfo);
+            sf.setArguments(bundle);
+
+            transaction.replace(R.id.pageFragment, sf);
+            transaction.commit();
+        }
+
+        if (item.getItemId() == R.id.nav_journey){
+
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+
+            transaction.replace(R.id.pageFragment, new JourneyFragment());
+            transaction.commit();
+
+        }
+
+
+        return true;
     }
 
 
@@ -680,10 +786,14 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                     FragmentManager manager = getFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
 
+
+                    HomeFragment homeFrag = new HomeFragment();
+
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("feedData", AllFeedInfo);
-                    frFeed.setArguments(bundle);
-                    transaction.replace(R.id.fragment,frFeed);
+                    homeFrag.setArguments(bundle);
+
+                    transaction.replace(R.id.pageFragment, homeFrag);
                     transaction.commit();
 
 
@@ -715,7 +825,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
             FilteredFeedInfo = new ArrayList<Item>();
 
             for (int i = 0; i < AllFeedInfo.size(); i++) {
-                LocalDate pickedLDate = LocalDate.parse(setDateTV.getText().toString());
+                LocalDate pickedLDate = selectedDate;
                 LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
                 LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
 
@@ -746,7 +856,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("feedData", FilteredFeedInfo);
                     frFeed.setArguments(bundle);
-                    transaction.replace(R.id.fragment,frFeed);
+                    transaction.replace(R.id.pageFragment,frFeed);
                     transaction.commit();
 
 
@@ -791,8 +901,6 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                     FilteredFeedInfo.add(AllFeedInfo.get(i));
                 }
 
-
-
             }
 
 
@@ -810,7 +918,7 @@ public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("feedData", FilteredFeedInfo);
                     frFeed.setArguments(bundle);
-                    transaction.replace(R.id.fragment,frFeed);
+                    transaction.replace(R.id.pageFragment,frFeed);
                     transaction.commit();
 
 

@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        />
+    <item
+        android:id="@+id/search"
+        android:title="Search"
+        />
+    <item
+        android:id="@+id/journey"
+        android:title="Journey"
+        />
+</menu>
