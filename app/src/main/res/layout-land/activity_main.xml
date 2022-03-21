@@ -6,7 +6,6 @@
     android:layout_height="wrap_content">
 
 
-
     <LinearLayout
         android:id="@+id/ItemLayout"
         android:layout_width="match_parent"
@@ -20,23 +19,11 @@
             />
 
         <FrameLayout
-            android:id="@+id/topPageFrag"
+            android:id="@+id/pageFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <FrameLayout
-            android:id="@+id/fragment"
-            android:layout_width="match_parent"
-            android:layout_height="683dp">
-
-        </FrameLayout>
+            android:layout_height="match_parent"/>
 
 
     </LinearLayout>
-
 
 </ScrollView>

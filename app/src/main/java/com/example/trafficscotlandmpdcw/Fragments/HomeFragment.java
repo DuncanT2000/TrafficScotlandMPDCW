@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.trafficscotlandmpdcw.FragmentFeedData;
 import com.example.trafficscotlandmpdcw.Item;
 import com.example.trafficscotlandmpdcw.LoadingFragment;
 import com.example.trafficscotlandmpdcw.R;
@@ -54,12 +55,12 @@ public class HomeFragment extends Fragment {
                 transaction.commit();
             }else{
 
-                FullMapFragment fullMapFragment = new FullMapFragment();
+                FragmentFeedData fragmentFeedData = new FragmentFeedData();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("feedData", items);
-                fullMapFragment.setArguments(bundle);
+                fragmentFeedData.setArguments(bundle);
                 transaction.replace(R.id.topPageFrag,new HomeOptionsFragment());
-                transaction.replace(contentFragment.getId(),fullMapFragment);
+                transaction.replace(contentFragment.getId(),fragmentFeedData);
                 transaction.commit();
 
             }

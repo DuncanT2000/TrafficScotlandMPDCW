@@ -54,7 +54,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         private TextView trafficMantv;
         private TextView worktv;
         private TextView reasontv;
-        private TextView duration;
+        private TextView delayInfo;
 
 
 
@@ -64,13 +64,10 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             title = view.findViewById(R.id.feed_item_title);
             StartEndDatetv = view.findViewById(R.id.StartEndDatetv);
             viewMoreBtn = view.findViewById(R.id.viewMoreBtn);
-            itemType = view.findViewById(R.id.typeTV);
-            trafficMantv = view.findViewById(R.id.trafficMantv);
             worktv = view.findViewById(R.id.worktv);
-            reasontv = view.findViewById(R.id.reasontv);
             description = view.findViewById(R.id.currentDescription);
-
-            duration = view.findViewById(R.id.durationtv);
+            pubDate = view.findViewById(R.id.pubDate);
+            delayInfo=  view.findViewById(R.id.delayInfo);
 
         }
 
@@ -96,21 +93,33 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                 holder.title.setText("Title: " + itemTitle);
             }
 
-            holder.StartEndDatetv.setText( itemList.get(position).getStartDate().toString()+" - " + itemList.get(position).getEndDate().toString());
+
+
+            if (itemList.get(position).getStartDate() != null && itemList.get(position).getEndDate() != null){
+                String itemStartDate = itemList.get(position).getStartDate().toString();
+                String itemEndDate = itemList.get(position).getEndDate().toString();
+
+                holder.StartEndDatetv.setText("Duration: " +itemStartDate + " - " + itemEndDate );
+
+            }
+
+
+
+
+
+            if (itemList.get(position).getWork() != null){
+                holder.worktv.setText("Work: " +itemList.get(position).getWork());
+            }else{
+                holder.worktv.setText("Work: Not Set");
+            }
 
             LocalDate startDate = LocalDate.parse(itemList.get(position).getStartDate());
             LocalDate endDate = LocalDate.parse(itemList.get(position).getEndDate());
 
-            holder.itemType.setText(itemList.get(position).getItemType());
-
-            holder.worktv.setText("Work: " +itemList.get(position).getWork());
-            holder.trafficMantv.setText("Traffic Management: " +itemList.get(position).getTrafficManagement());
-
-
 
             long days = DAYS.between(startDate, endDate);
 
-            if (days >=1 && days <=2){
+            if (days >=0 && days <=2){
                 holder.viewMoreBtn.setBackgroundColor(context.getResources().getColor(R.color.green));
             }else if (days >=3 && days <=5){
                 holder.viewMoreBtn.setBackgroundColor(context.getResources().getColor(R.color.yellow));
@@ -126,14 +135,13 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             {
                 public void onClick(View view)
                 {
-
                     FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
                     FragmentTransaction transaction = manager.beginTransaction();
 
                     ItemFragment itemFragment = new ItemFragment();
 
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("itemPos", position);
+                    bundle.putSerializable("itemData", itemList.get(position));
                     itemFragment.setArguments(bundle);
 
                     transaction.replace(MainActivity.pageFragment.getId(), itemFragment);
@@ -157,6 +165,31 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                 holder.description.setText("Description: " + itemDescription);
             }
 
+            if (itemList.get(position).getPubDate() != null){
+                String itemPubDate = itemList.get(position).getPubDate().toString();
+                holder.pubDate.setText("Pub Date: " + itemPubDate);
+            }
+
+
+            holder.viewMoreBtn.setOnClickListener( new View.OnClickListener()
+            {
+                public void onClick(View view)
+                {
+
+                    FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+
+                    ItemFragment itemFragment = new ItemFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("itemData", itemList.get(position));
+                    itemFragment.setArguments(bundle);
+
+                    transaction.replace(MainActivity.pageFragment.getId(), itemFragment);
+                    transaction.commit();
+
+                }});
+
 
         }
 
@@ -172,9 +205,37 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                 String itemStartDate = itemList.get(position).getStartDate().toString();
                 String itemEndDate = itemList.get(position).getEndDate().toString();
 
-                holder.duration.setText("" +itemStartDate + " - " + itemEndDate );
+                holder.StartEndDatetv.setText("Duration: " +itemStartDate + " - " + itemEndDate );
 
             }
+
+            LocalDate startDate = LocalDate.parse(itemList.get(position).getStartDate());
+            LocalDate endDate = LocalDate.parse(itemList.get(position).getEndDate());
+
+
+            long days = DAYS.between(startDate, endDate);
+
+            if (days >=0 && days <=2){
+                holder.viewMoreBtn.setBackgroundColor(context.getResources().getColor(R.color.green));
+            }else if (days >=3 && days <=5){
+                holder.viewMoreBtn.setBackgroundColor(context.getResources().getColor(R.color.yellow));
+            }
+            else if (days >=6){
+                holder.viewMoreBtn.setBackgroundColor(context.getResources().getColor(R.color.red));
+            }
+
+
+            if (itemList.get(position).getDelayInformation() != null){
+                holder.delayInfo.setText("Delay Information: " +itemList.get(position).getDelayInformation());
+            }else{
+                holder.delayInfo.setText("Delay Information: Not Set");
+            }
+
+            if (itemList.get(position).getPubDate() != null){
+                String itemPubDate = itemList.get(position).getPubDate().toString();
+                holder.pubDate.setText("Pub Date: " + itemPubDate);
+            }
+
 
             holder.viewMoreBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -185,7 +246,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                     ItemFragment itemFragment = new ItemFragment();
 
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("itemPos", position);
+                    bundle.putSerializable("itemData", itemList.get(position));
                     itemFragment.setArguments(bundle);
 
                     transaction.replace(MainActivity.pageFragment.getId(), itemFragment);

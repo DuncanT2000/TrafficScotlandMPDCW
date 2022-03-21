@@ -130,7 +130,9 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
         selectedDate = LocalDate.of(year, month + 1, day);
 
-        setDateTV.setText(selectedDate.getYear()+ "-" + selectedDate.getMonthValue() + "-" + selectedDate.getDayOfMonth());
+        Log.d(TAG, "onDateSet: " + selectedDate);
+
+        setDateTV.setText(selectedDate.toString());
 
         if (type_spinner.getSelectedItemId() == 0){
             startFilterByDate("all");
@@ -252,12 +254,12 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
                     androidx.fragment.app.FragmentManager manager = getFragmentManager();
                     androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
 
-                    FullMapFragment fullMapFragment = new FullMapFragment();
+                    FragmentFeedData fragmentFeedData = new FragmentFeedData();
 
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("feedData", FilteredFeedInfo);
-                    fullMapFragment.setArguments(bundle);
-                    transaction.replace(HomeFragment.contentFragment.getId(),fullMapFragment);
+                    fragmentFeedData.setArguments(bundle);
+                    transaction.replace(HomeFragment.contentFragment.getId(),fragmentFeedData);
                     transaction.commit();
 
 
@@ -366,12 +368,12 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
                         androidx.fragment.app.FragmentManager manager = getFragmentManager();
                         androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
 
-                        FullMapFragment fullMapFragment = new FullMapFragment();
-
+                        FragmentFeedData fragmentFeedData = new FragmentFeedData();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("feedData", FilteredFeedInfo);
-                        fullMapFragment.setArguments(bundle);
-                        transaction.replace(HomeFragment.contentFragment.getId(),fullMapFragment);
+                        fragmentFeedData.setArguments(bundle);
+                        transaction.replace(R.id.topPageFrag,new HomeOptionsFragment());
+                        transaction.replace(HomeFragment.contentFragment.getId(),fragmentFeedData);
                         transaction.commit();
 
 

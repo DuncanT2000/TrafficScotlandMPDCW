@@ -6,7 +6,7 @@
     android:minHeight="?attr/actionBarSize"
     android:background="@color/colorPrimary"
     android:layout_width="match_parent"
-    app:titleTextColor="@color/black"
+    app:titleTextColor="@color/white"
     android:layout_height="wrap_content"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"

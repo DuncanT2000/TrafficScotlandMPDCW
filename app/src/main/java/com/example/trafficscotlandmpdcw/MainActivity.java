@@ -144,9 +144,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         transaction.commit();
 
 
-        Log.d(TAG, "onCreate: "+ feedData.getFeedInfoArray().size());
 
-        startProgress();
+        if (feedData.getFeedInfoArray().size() == 0){
+            startProgress();
+        }
+
 
 
     }
@@ -317,19 +319,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
             alist.remove(0);
-
+            ArrayList<Item> alistFiltered = new ArrayList<Item>();
             for (int i = 0; i < alist.size(); i++) {
 
-                Log.d(TAG, "hasWork: " + (alist.get(i).getWork() != null));
-
-                if (alist.get(i).getWork() == null){
-                    alist.remove(i);
+                if (alist.get(i).getWork() != null){
+                    alist.get(i).setItemType("planned");
+                    alistFiltered.add(alist.get(i));
                 }
 
-                alist.get(i).setItemType("planned");
+
             }
 
-            AllFeedInfo.addAll(alist);
+            AllFeedInfo.addAll(alistFiltered);
 
         }
         else if (type == "current"){
