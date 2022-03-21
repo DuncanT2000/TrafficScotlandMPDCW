@@ -70,7 +70,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity implements OnClickListener, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener
 {
 
     public static FeedData feedData = new FeedData();
@@ -170,30 +170,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
 
 
-
-
-
-    @Override
-    public void onClick(View v)
-    {
-
-
-        if (v == datePickerBtn) {
-            Log.d(TAG, "onClick: User is looking to open set a new date");
-            showDatePickerDialog();
-        }
-
-    }
-
-
-    private void showDatePickerDialog(){
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                this,
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
-        datePickerDialog.show();
-    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -680,10 +656,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         return true;
     }
 
-    @Override
-    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-
-    }
 
 
     private class Task implements Runnable

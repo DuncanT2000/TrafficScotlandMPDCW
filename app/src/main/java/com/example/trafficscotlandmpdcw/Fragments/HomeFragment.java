@@ -2,7 +2,7 @@ package com.example.trafficscotlandmpdcw.Fragments;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.content.Intent;
+
 import android.os.Bundle;
 
 import android.util.Log;
@@ -12,9 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.trafficscotlandmpdcw.FragmentFeedData;
 import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.ItemActivity;
 import com.example.trafficscotlandmpdcw.LoadingFragment;
 import com.example.trafficscotlandmpdcw.R;
 
@@ -41,31 +39,29 @@ public class HomeFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
         items = getArguments().getParcelableArrayList("feedData");
 
         contentFragment = view.findViewById(R.id.contentFragment);
 
         Log.d(TAG, "onCreateView: " + items);
 
-            FragmentFeedData frFeedFrag = new FragmentFeedData();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("feedData", items);
-            frFeedFrag.setArguments(bundle);
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
 
             if (items.size() == 0){
-                FragmentManager manager = getFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
                 transaction.replace(R.id.topPageFrag,new HomeOptionsFragment());
                 transaction.replace(R.id.contentFragment,new LoadingFragment());
                 transaction.commit();
             }else{
-                FragmentManager manager = getFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
+
+                FullMapFragment fullMapFragment = new FullMapFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("feedData", items);
+                fullMapFragment.setArguments(bundle);
                 transaction.replace(R.id.topPageFrag,new HomeOptionsFragment());
-                transaction.replace(R.id.contentFragment,frFeedFrag);
+                transaction.replace(contentFragment.getId(),fullMapFragment);
                 transaction.commit();
+
             }
 
 

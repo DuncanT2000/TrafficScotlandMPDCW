@@ -54,6 +54,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         private TextView trafficMantv;
         private TextView worktv;
         private TextView reasontv;
+        private TextView duration;
 
 
 
@@ -69,6 +70,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             reasontv = view.findViewById(R.id.reasontv);
             description = view.findViewById(R.id.currentDescription);
 
+            duration = view.findViewById(R.id.durationtv);
 
         }
 
@@ -165,6 +167,32 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                 Log.d(TAG, "onBindViewHolder: "+ itemTitle);
                 holder.title.setText("Title: " + itemTitle);
             }
+
+            if (itemList.get(position).getStartDate() != null && itemList.get(position).getEndDate() != null){
+                String itemStartDate = itemList.get(position).getStartDate().toString();
+                String itemEndDate = itemList.get(position).getEndDate().toString();
+
+                holder.duration.setText("" +itemStartDate + " - " + itemEndDate );
+
+            }
+
+            holder.viewMoreBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+
+                    ItemFragment itemFragment = new ItemFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("itemPos", position);
+                    itemFragment.setArguments(bundle);
+
+                    transaction.replace(MainActivity.pageFragment.getId(), itemFragment);
+                    transaction.commit();
+                }
+            });
+
 
         }
 

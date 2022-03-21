@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-public class Item implements Parcelable {
+public class Item implements Parcelable, Serializable {
 
     private String title;
     private String description;

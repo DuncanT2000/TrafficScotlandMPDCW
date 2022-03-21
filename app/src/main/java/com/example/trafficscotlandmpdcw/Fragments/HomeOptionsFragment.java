@@ -94,6 +94,13 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    public void startFilterByDate( String type)
+    {
+        Log.d(TAG, "startFilter: "+ type);
+        if (AllFeedInfo.size()> 0){
+            new Thread(new FilterDataByDate(type)).start();
+        }
+    }
 
     @Override
     public void onClick(View v)
@@ -126,13 +133,17 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
         setDateTV.setText(selectedDate.getYear()+ "-" + selectedDate.getMonthValue() + "-" + selectedDate.getDayOfMonth());
 
         if (type_spinner.getSelectedItemId() == 0){
-            startFilter("planned");
+            startFilterByDate("all");
         }
+
         if (type_spinner.getSelectedItemId() == 1){
-            startFilter("current");
+            startFilterByDate("planned");
         }
         if (type_spinner.getSelectedItemId() == 2){
-            startFilter("roadworks");
+            startFilterByDate("current");
+        }
+        if (type_spinner.getSelectedItemId() == 3){
+            startFilterByDate("roadworks");
         }
 
 
@@ -142,23 +153,35 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
-
-
-        if (i == 0){
+        if (i == 1){
             startFilter("planned");
         }
-        if (i == 1){
+        if (i == 2){
             startFilter("current");
         }
-        if (i == 2){
+        if (i == 3){
             startFilter("roadworks");
         }
-
 
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
+
+        if (adapterView.getSelectedItemId() == 0){
+            startFilter("all");
+        }
+
+        if (adapterView.getSelectedItemId() == 1){
+            startFilter("planned");
+        }
+        if (adapterView.getSelectedItemId() == 2){
+            startFilter("current");
+        }
+        if (adapterView.getSelectedItemId() == 3){
+            startFilter("roadworks");
+        }
+
 
     }
 
@@ -176,38 +199,46 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
         public void run()
         {
 
+
+
             FilteredFeedInfo = new ArrayList<Item>();
             Log.d(TAG, "run:  New Thread Running");
-            Log.d(TAG, "run: " + FilteredFeedInfo.size());
+            if (feedType == "all"){
+                FilteredFeedInfo = MainActivity.feedData.getFeedInfoArray();
+            }else{
+                for (int i = 0; i < MainActivity.feedData.getFeedInfoArray().size(); i++) {
+                    LocalDate pickedLDate = selectedDate;
 
-            for (int i = 0; i < MainActivity.feedData.getFeedInfoArray().size(); i++) {
-                LocalDate pickedLDate = selectedDate;
 
-                if (AllFeedInfo.get(i).getItemType() == feedType){
-                    FilteredFeedInfo.add(AllFeedInfo.get(i));
-
-                }
-
-                /*
-
-                if (AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
-                    LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
-                    LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
-
-                    Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
-                    Date startDate = java.sql.Date.valueOf(startLDate.toString());
-                    Date endDate = java.sql.Date.valueOf(endLDate.toString());
-
-                    if (AllFeedInfo.get(i).getItemType() == feedType){
+                    if (AllFeedInfo.get(i).getItemType() == "current" && feedType == "current"){
                         FilteredFeedInfo.add(AllFeedInfo.get(i));
                     }
 
+
+                    if (AllFeedInfo.get(i).getItemType() == feedType && AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
+                        LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                        LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                        Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                        Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                        Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+                        if (pickedDate.equals(startDate) || pickedDate.after(startDate) && pickedDate.before(endDate) || pickedDate.equals(endDate)){
+                            FilteredFeedInfo.add(AllFeedInfo.get(i));
+                        }
+
+
+
+
+                    }
+
+
                 }
 
-                */
+                Log.d(TAG, "run: " + FilteredFeedInfo.size());
             }
 
-            Log.d(TAG, "run: " + FilteredFeedInfo.size());
+
 
             getActivity().runOnUiThread(new Runnable()
             {
@@ -221,12 +252,12 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
                     androidx.fragment.app.FragmentManager manager = getFragmentManager();
                     androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
 
-                    FragmentFeedData frFeed = new FragmentFeedData();
+                    FullMapFragment fullMapFragment = new FullMapFragment();
 
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("feedData", FilteredFeedInfo);
-                    frFeed.setArguments(bundle);
-                    transaction.replace(HomeFragment.contentFragment.getId(),frFeed);
+                    fullMapFragment.setArguments(bundle);
+                    transaction.replace(HomeFragment.contentFragment.getId(),fullMapFragment);
                     transaction.commit();
 
 
@@ -239,6 +270,126 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
         }
 
     }
+
+
+    private class FilterDataByDate implements Runnable
+    {
+        private String feedType;
+
+        public FilterDataByDate(String FeedType) {
+            feedType = FeedType;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public void run()
+        {
+
+            FilteredFeedInfo = new ArrayList<Item>();
+
+
+            if (feedType == "all"){
+
+
+                for (int i = 0; i < MainActivity.feedData.getFeedInfoArray().size(); i++) {
+                    LocalDate pickedLDate = selectedDate;
+
+
+
+                    if ( AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
+                        LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                        LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                        Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                        Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                        Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+                        if (pickedDate.equals(startDate) || pickedDate.after(startDate) && pickedDate.before(endDate) || pickedDate.equals(endDate)){
+                            FilteredFeedInfo.add(AllFeedInfo.get(i));
+                        }
+
+
+
+
+                    }
+
+
+                }
+
+
+            }else{
+                for (int i = 0; i < MainActivity.feedData.getFeedInfoArray().size(); i++) {
+                    LocalDate pickedLDate = selectedDate;
+
+
+                    if (AllFeedInfo.get(i).getItemType() == "current" && feedType == "current"){
+                        FilteredFeedInfo.add(AllFeedInfo.get(i));
+                    }
+
+
+                    if (AllFeedInfo.get(i).getItemType() == feedType && AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
+                        LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                        LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                        Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                        Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                        Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+                        if (pickedDate.equals(startDate) || pickedDate.after(startDate) && pickedDate.before(endDate) || pickedDate.equals(endDate)){
+                            FilteredFeedInfo.add(AllFeedInfo.get(i));
+                        }
+
+
+
+
+                    }
+
+
+                }
+
+                Log.d(TAG, "run: " + FilteredFeedInfo.size());
+            }
+
+
+
+            getActivity().runOnUiThread(new Runnable()
+            {
+                public void run() {
+
+                    if (FilteredFeedInfo !=null){
+
+                        Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
+                        Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
+
+                        Log.d(TAG, "run: " + FilteredFeedInfo.size());
+
+                        androidx.fragment.app.FragmentManager manager = getFragmentManager();
+                        androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
+
+                        FullMapFragment fullMapFragment = new FullMapFragment();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("feedData", FilteredFeedInfo);
+                        fullMapFragment.setArguments(bundle);
+                        transaction.replace(HomeFragment.contentFragment.getId(),fullMapFragment);
+                        transaction.commit();
+
+
+                    }
+
+
+
+
+
+
+                }
+            });
+
+
+        }
+
+    }
+
 
 
 

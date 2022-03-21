@@ -12,6 +12,7 @@
     <string name="close"></string>
 
     <string-array name="itemType">
+        <item>All</item>
         <item>Planned Roadworks</item>
         <item>Current Incidents</item>
         <item>Roadworks</item>

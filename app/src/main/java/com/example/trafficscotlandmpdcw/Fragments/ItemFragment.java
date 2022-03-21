@@ -50,7 +50,11 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_item, container, false);
 
-        item = MainActivity.feedData.getFeedInfoArray().get(getArguments().getInt("itemPos", 0));
+        item = getArguments().getParcelable("itemData");
+
+        //item = MainActivity.feedData.getFeedInfoArray().get(getArguments().getInt("itemPos", 0));
+
+        Log.d(TAG, "onCreateView: " + item);
 
 
         journeyBtn = view.findViewById(R.id.addToJourneyBTN);
@@ -83,14 +87,6 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
 
         if (view == journeyBtn){
-
-            ArrayList<Item> currentJourneyData = MainActivity.JourneyData.getFeedInfoArray();
-
-            currentJourneyData.add(item);
-
-            MainActivity.JourneyData.setFeedInfoArray(currentJourneyData);
-
-            Toast.makeText(getContext(),"Roadwork has been added to your journey!", Toast.LENGTH_SHORT).show();
 
         }
 
