@@ -67,6 +67,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Fragment fr;
 
 
+    //save the state
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -107,34 +114,38 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         Log.e("MyTag","in onCreate");
 
-
         mytoolBar =  findViewById(R.id.my_tool_bar);
         setSupportActionBar(mytoolBar);
 
+        if (savedInstanceState != null) {
+            Log.d(TAG, "onSavedState: Test");
 
-        pageFragment = findViewById(R.id.pageFragment);
-
-
-        frFeed = new FragmentFeedData();
-
-
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        HomeFragment homeFrag = new HomeFragment();
-
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("feedData", feedData.getFeedInfoArray());
-        homeFrag.setArguments(bundle);
-
-        transaction.replace(R.id.pageFragment, homeFrag);
-        transaction.commit();
+        } else {
+            pageFragment = findViewById(R.id.pageFragment);
 
 
+            frFeed = new FragmentFeedData();
 
-        if (feedData.getFeedInfoArray().size() == 0){
-            startProgress();
+
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+
+            HomeFragment homeFrag = new HomeFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("feedData", feedData.getFeedInfoArray());
+            homeFrag.setArguments(bundle);
+
+            transaction.replace(R.id.pageFragment, homeFrag);
+            transaction.commit();
+
+            if (feedData.getFeedInfoArray().size() == 0){
+                startProgress();
+            }
         }
+
+
+
 
 
 
@@ -153,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void startProgress()
     {
 
-        new Thread(new Task(urlArray)).start();
+        Executors.newSingleThreadExecutor().execute(new Task(urlArray));
 
     }
 

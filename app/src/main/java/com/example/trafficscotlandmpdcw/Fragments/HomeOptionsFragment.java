@@ -27,6 +27,7 @@ import com.example.trafficscotlandmpdcw.Item;
 import com.example.trafficscotlandmpdcw.MainActivity;
 import com.example.trafficscotlandmpdcw.R;
 
+import java.security.PublicKey;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,7 +53,6 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
         // Required empty public constructor
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,35 +60,39 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home_options, container, false);
 
-        AllFeedInfo = MainActivity.feedData.getFeedInfoArray();
+
+            AllFeedInfo = MainActivity.feedData.getFeedInfoArray();
+
+            Log.d(TAG, "AllFeedInfo Size: " + AllFeedInfo.size());
+
+            datePickerBtn = view.findViewById(R.id.datepickerBTN);
+
+            setDateTV = view.findViewById(R.id.setDateTV);
+            type_spinner = view.findViewById(R.id.type_spinner);
+
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.itemType, android.R.layout.simple_spinner_item);
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            type_spinner.setAdapter(adapter);
+
+            type_spinner.setOnItemSelectedListener(this);
+
+            datePickerBtn.setOnClickListener(this);
+
+            selectedDate = LocalDate.now();
+
+            setDateTV.setText(selectedDate.toString());
 
 
-        Log.d(TAG, "AllFeedInfo Size: " + AllFeedInfo.size());
 
-        datePickerBtn = view.findViewById(R.id.datepickerBTN);
 
-        setDateTV = view.findViewById(R.id.setDateTV);
-        type_spinner = view.findViewById(R.id.type_spinner);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.itemType, android.R.layout.simple_spinner_item);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        type_spinner.setAdapter(adapter);
-
-        type_spinner.setOnItemSelectedListener(this);
-
-        datePickerBtn.setOnClickListener(this);
-
-        selectedDate = LocalDate.now();
-
-        setDateTV.setText(selectedDate.toString());
 
         return view;
     }
 
     public void startFilter( String type)
     {
-        Log.d(TAG, "startFilterByType: "+ type);
+
         if (AllFeedInfo.size()> 0){
             new Thread(new FilterData(type)).start();
         }

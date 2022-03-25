@@ -44,10 +44,11 @@ public class HomeFragment extends Fragment {
 
         contentFragment = view.findViewById(R.id.contentFragment);
 
-        Log.d(TAG, "onCreateView: " + items);
+        if (savedInstanceState!= null){
 
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
+        }else{
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
 
             if (items.size() == 0){
                 transaction.replace(R.id.topPageFrag,new HomeOptionsFragment());
@@ -64,7 +65,7 @@ public class HomeFragment extends Fragment {
                 transaction.commit();
 
             }
-
+        }
 
 
         return view;
