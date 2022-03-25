@@ -11,8 +11,8 @@
         android:id="@+id/searchTerm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search Term..."
-        />
+        android:minHeight="48dp"
+        android:text="Search Term..." />
 
     <Button
         android:id="@+id/searchBtn"
@@ -20,6 +20,9 @@
         android:layout_height="wrap_content"
         android:text="Search"
         />
-
+<FrameLayout
+    android:id="@+id/search_results_frag"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
 
 </LinearLayout>

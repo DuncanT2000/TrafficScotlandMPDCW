@@ -89,7 +89,6 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         if (itemList.get(position).getItemType() == "planned"){
             if (itemList.get(position).getTitle() != null){
                 String itemTitle = itemList.get(position).getTitle().toString();
-                Log.d(TAG, "onBindViewHolder: "+ itemTitle);
                 holder.title.setText("Title: " + itemTitle);
             }
 
@@ -155,13 +154,12 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
             if (itemList.get(position).getTitle() != null){
                 String itemTitle = itemList.get(position).getTitle().toString();
-                Log.d(TAG, "onBindViewHolder: "+ itemTitle);
                 holder.title.setText("Title: " + itemTitle);
             }
 
             if (itemList.get(position).getDescription() != null){
                 String itemDescription = itemList.get(position).getDescription().toString();
-                Log.d(TAG, "onBindViewHolder: "+ itemDescription);
+
                 holder.description.setText("Description: " + itemDescription);
             }
 

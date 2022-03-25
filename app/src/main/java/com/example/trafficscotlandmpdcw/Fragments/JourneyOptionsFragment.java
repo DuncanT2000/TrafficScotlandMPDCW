@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.trafficscotlandmpdcw.Item;
@@ -37,6 +38,10 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
     private ArrayList<Item> FilteredFeedInfo;
     private TextView setDateTV;
 
+    private EditText toLocation;
+    private EditText fromLocation;
+    private Button viewJourneyBtn;
+
     public JourneyOptionsFragment() {
         // Required empty public constructor
     }
@@ -54,7 +59,13 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
 
         setDateTV = view.findViewById(R.id.setDateTV);
 
+        toLocation = view.findViewById(R.id.et_to);
+        fromLocation = view.findViewById(R.id.et_from);
+        viewJourneyBtn = view.findViewById(R.id.viewjourneyBtn);
+
         datePickerBtn.setOnClickListener(this);
+
+        viewJourneyBtn.setOnClickListener(this);
 
         return view;
     }
@@ -67,6 +78,19 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
             Log.d(TAG, "onClick: User is looking to open set a new date");
             showDatePickerDialog();
         }
+
+        if (v == viewJourneyBtn){
+            String fromStr = fromLocation.getText().toString();
+            String toStr = toLocation.getText().toString();
+
+
+
+        }
+
+
+    }
+
+    private void DisplayDirections (String fromLocation, String toLocation){
 
     }
 
@@ -96,7 +120,6 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
         setDateTV.setText(selectedDate.getYear()+ "-" + selectedDate.getMonthValue() + "-" + selectedDate.getDayOfMonth());
 
         startFilterByDate();
-
 
     }
 

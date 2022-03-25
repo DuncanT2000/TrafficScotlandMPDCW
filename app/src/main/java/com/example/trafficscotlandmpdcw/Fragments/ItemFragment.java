@@ -32,11 +32,9 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
 
     Fragment mapFragment;
 
-    Button journeyBtn;
-
     Button closeBtn;
 
-
+    Fragment itemDetailsFragment;
 
 
     public ItemFragment() {
@@ -52,17 +50,13 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
 
         item = getArguments().getParcelable("itemData");
 
-        //item = MainActivity.feedData.getFeedInfoArray().get(getArguments().getInt("itemPos", 0));
-
         Log.d(TAG, "onCreateView: " + item);
 
-
-        journeyBtn = view.findViewById(R.id.addToJourneyBTN);
 
         closeBtn = view.findViewById(R.id.closeBtn);
 
 
-        journeyBtn.setOnClickListener(this);
+
         closeBtn.setOnClickListener(this);
 
         Log.d(TAG, "onCreateView: " + item);
@@ -71,12 +65,24 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
         FragmentTransaction transaction = manager.beginTransaction();
 
         Bundle bundle = new Bundle();
+        Bundle itemDetailsBundle = new Bundle();
         mapFragment=  new MapFragment();
         bundle.putString("itemLat", item.getLatStr());
         bundle.putString("itemLong", item.getLongStr());
         mapFragment.setArguments(bundle);
 
+        if (item.getItemType() == "planned"){
+            itemDetailsFragment = new planned_details_Fragment();
+        }else if(item.getItemType() == "current"){
+            itemDetailsFragment = new current_details();
+        }else if(item.getItemType() == "roadworks"){
+            itemDetailsFragment = new roadwork_details_Fragment();
+        }
+        itemDetailsBundle.putSerializable("itemData", item);
+        itemDetailsFragment.setArguments(itemDetailsBundle);
+
         transaction.replace(R.id.map_fragment,mapFragment);
+        transaction.replace(R.id.item_details_fragment,itemDetailsFragment);
         transaction.commit();
 
 
@@ -85,10 +91,6 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-
-        if (view == journeyBtn){
-
-        }
 
         if (view == closeBtn){
 

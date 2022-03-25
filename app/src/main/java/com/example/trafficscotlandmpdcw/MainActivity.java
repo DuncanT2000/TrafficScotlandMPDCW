@@ -74,25 +74,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 {
 
     public static FeedData feedData = new FeedData();
-    public static FeedData JourneyData = new FeedData();
 
     public static View pageFragment;
-    private LinearLayout itemLayout;
     private ArrayList<Item> alist;
     private ArrayList<Item> currentincidents;
     private ArrayList<Item> roadworksincidents;
     private ArrayList<Item> AllFeedInfo = new ArrayList<Item>();
-    private ArrayList<Item> FilteredFeedInfo = new ArrayList<Item>();
-    private ArrayList<Item> journeyItems = new ArrayList<Item>();
     private String result = "";
     private String url1="";
-    private Button datePickerBtn;
-
-    private LocalDate selectedDate;
-    private TextView setDateTV;
-    private Spinner type_spinner;
-
-    private PopupMenu popupMenu;
     private Toolbar mytoolBar;
 
 
@@ -124,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         pageFragment = findViewById(R.id.pageFragment);
-
-        JourneyData.setFeedInfoArray(journeyItems);
 
 
         frFeed = new FragmentFeedData();
@@ -169,8 +156,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         new Thread(new Task(urlArray)).start();
 
     }
-
-
 
 
 
@@ -607,15 +592,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         super.onOptionsItemSelected(item);
 
-        if (item.getItemId() == R.id.nav_home){
+
+        if (item.getItemId() == R.id.nav_home && feedData.getFeedInfoArray().size()> 0){
 
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
 
 
             HomeFragment homeFrag = new HomeFragment();
-
-            feedData.setFeedInfoArray(AllFeedInfo);
 
             Bundle bundle = new Bundle();
             bundle.putSerializable("feedData", feedData.getFeedInfoArray());
@@ -627,13 +611,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }
 
-        if (item.getItemId() == R.id.nav_search){
+       else if (item.getItemId() == R.id.nav_search && feedData.getFeedInfoArray().size()> 0){
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
 
             SearchFragment sf = new SearchFragment();
-
-            feedData.setFeedInfoArray(AllFeedInfo);
 
             Bundle bundle = new Bundle();
             bundle.putSerializable("feedData", feedData.getFeedInfoArray());
@@ -643,7 +625,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             transaction.commit();
         }
 
-        if (item.getItemId() == R.id.nav_journey){
+        else if (item.getItemId() == R.id.nav_journey && feedData.getFeedInfoArray().size()> 0){
 
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
@@ -651,6 +633,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             transaction.replace(R.id.pageFragment, new JourneyFragment());
             transaction.commit();
 
+        }else{
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Please wait until data has loaded!",
+                    Toast.LENGTH_SHORT);
+
+            toast.show();
         }
 
 
@@ -672,7 +660,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         public void run()
         {
-            Log.d("TAG", "run: "+ url[0]);
 
             for (int i = 0; i < url.length; i++) {
 
@@ -682,27 +669,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String inputLine = "";
                 result = "";
 
-                Log.e("MyTag","in run");
 
                 try
                 {
-                    Log.e("MyTag","in try");
                     aurl = new URL(url[i]);
                     yc = aurl.openConnection();
                     in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                    Log.e("MyTag","after ready");
-                    //
-                    // Now read the data. Make sure that there are no specific hedrs
-                    // in the data file that you need to ignore.
-                    // The useful data that you need is in each of the item entries
-                    //
 
                     while ((inputLine = in.readLine()) != null)
                     {
                         result = result + inputLine;
 
                     }
-
                     in.close();
 
                 }
@@ -710,8 +688,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 {
                     Log.e("MyTag", "ioexception in run");
                 }
-
-                Log.d("TAG", "Got Data: " + result);
 
                 if(i == 0){
                     parseData(result,"planned");
@@ -723,7 +699,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 else if (i == 2){
                     parseData(result,"roadworks");
                 }
-
 
             }
 

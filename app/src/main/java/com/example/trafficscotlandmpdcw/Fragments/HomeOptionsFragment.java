@@ -88,7 +88,7 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
     public void startFilter( String type)
     {
-        Log.d(TAG, "startFilter: "+ type);
+        Log.d(TAG, "startFilterByType: "+ type);
         if (AllFeedInfo.size()> 0){
             new Thread(new FilterData(type)).start();
         }
@@ -96,7 +96,7 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
     public void startFilterByDate( String type)
     {
-        Log.d(TAG, "startFilter: "+ type);
+        Log.d(TAG, "startFilterByDate: "+ type);
         if (AllFeedInfo.size()> 0){
             new Thread(new FilterDataByDate(type)).start();
         }
@@ -155,6 +155,10 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
+        if (i == 0){
+            startFilter("all");
+        }
+
         if (i == 1){
             startFilter("planned");
         }
@@ -169,20 +173,6 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
-        if (adapterView.getSelectedItemId() == 0){
-            startFilter("all");
-        }
-
-        if (adapterView.getSelectedItemId() == 1){
-            startFilter("planned");
-        }
-        if (adapterView.getSelectedItemId() == 2){
-            startFilter("current");
-        }
-        if (adapterView.getSelectedItemId() == 3){
-            startFilter("roadworks");
-        }
 
 
     }
@@ -246,7 +236,7 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
             {
                 public void run() {
 
-                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
+                    Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering by Type" );
                     Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
 
                     Log.d(TAG, "run: " + FilteredFeedInfo.size());
@@ -360,7 +350,7 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
                     if (FilteredFeedInfo !=null){
 
-                        Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
+                        Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering by Date" );
                         Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
 
                         Log.d(TAG, "run: " + FilteredFeedInfo.size());
@@ -372,7 +362,6 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("feedData", FilteredFeedInfo);
                         fragmentFeedData.setArguments(bundle);
-                        transaction.replace(R.id.topPageFrag,new HomeOptionsFragment());
                         transaction.replace(HomeFragment.contentFragment.getId(),fragmentFeedData);
                         transaction.commit();
 
