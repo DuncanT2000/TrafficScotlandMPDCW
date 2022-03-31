@@ -11,6 +11,8 @@
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout-land/fragment_current_details.xml" value="0.1" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout-land/fragment_home_options.xml" value="0.25" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout-land/fragment_item.xml" value="0.1" />
+        <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout-land/fragment_planned_details_.xml" value="0.25" />
+        <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout-land/fragment_roadwork_details_.xml" value="0.21651785714285715" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout-land/roadworks_item.xml" value="0.25" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/activity_item.xml" value="0.22" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/activity_journey.xml" value="0.1515625" />
@@ -30,13 +32,13 @@
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_home_options.xml" value="0.21" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_item.xml" value="0.19375" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_journey.xml" value="0.2898148148148148" />
-        <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_journey_options.xml" value="0.2050561797752809" />
+        <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_journey_options.xml" value="0.1" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_loading.xml" value="0.18" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_map.xml" value="0.14719202898550723" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_nav.xml" value="0.2898148148148148" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_notifications.xml" value="0.12436676798378926" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_planned_details_.xml" value="0.1" />
-        <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_roadwork_details_.xml" value="0.2640449438202247" />
+        <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_roadwork_details_.xml" value="0.27247191011235955" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_search.xml" value="0.33" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/fragment_tab.xml" value="0.33" />
         <entry key="..\:/Users/Duncan/AndroidStudioProjects/TrafficScotlandMPDCW/app/src/main/res/layout/item_activity.xml" value="0.18" />

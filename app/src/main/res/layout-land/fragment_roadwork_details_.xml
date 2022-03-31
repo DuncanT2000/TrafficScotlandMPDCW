@@ -15,10 +15,9 @@
         android:text="Title"
         android:textAlignment="center" />
 
-
     <Space
         android:layout_width="match_parent"
-        android:layout_height="7sp"
+        android:layout_height="12sp"
         android:layout_weight="1" />
 
     <TextView
@@ -30,47 +29,21 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="7sp"
+        android:layout_height="12sp"
         android:layout_weight="1" />
 
     <TextView
-        android:id="@+id/item_works"
+        android:id="@+id/item_delay_information"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Works:"
+        android:text="Delay Information:"
         android:textAlignment="center" />
-
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="7sp"
+        android:layout_height="12sp"
         android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/item_traffic_management"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Traffic Management:"
-        android:textAlignment="center" />
-
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="7sp"
-        android:layout_weight="1" />
-
-    <TextView
-        android:id="@+id/item_diversion_information"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Diversion Information:"
-        android:textAlignment="center" />
-
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="7sp"
-        android:layout_weight="1" />
 
     <TextView
         android:id="@+id/item_PubDate"

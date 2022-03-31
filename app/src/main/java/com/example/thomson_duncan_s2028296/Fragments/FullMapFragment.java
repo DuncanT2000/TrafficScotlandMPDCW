@@ -1,15 +1,12 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-import android.content.Intent;
-import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,11 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.ItemActivity;
-import com.example.trafficscotlandmpdcw.MainActivity;
+import com.example.thomson_duncan_s2028296.Item;
+import com.example.thomson_duncan_s2028296.MainActivity;
 import com.example.trafficscotlandmpdcw.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,8 +30,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class FullMapFragment extends Fragment {

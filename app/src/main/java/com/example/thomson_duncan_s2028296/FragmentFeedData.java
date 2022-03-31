@@ -1,25 +1,18 @@
-package com.example.trafficscotlandmpdcw;
+package com.example.thomson_duncan_s2028296;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.Serializable;
+import com.example.trafficscotlandmpdcw.R;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 public class FragmentFeedData extends Fragment
 

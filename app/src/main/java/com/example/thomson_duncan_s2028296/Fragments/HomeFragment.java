@@ -1,20 +1,19 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.trafficscotlandmpdcw.FragmentFeedData;
-import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.LoadingFragment;
+import com.example.thomson_duncan_s2028296.FragmentFeedData;
+import com.example.thomson_duncan_s2028296.Item;
+import com.example.thomson_duncan_s2028296.LoadingFragment;
 import com.example.trafficscotlandmpdcw.R;
 
 import java.util.ArrayList;

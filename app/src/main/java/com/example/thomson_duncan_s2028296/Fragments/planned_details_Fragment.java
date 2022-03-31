@@ -1,4 +1,4 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -16,10 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.trafficscotlandmpdcw.Item;
+import com.example.thomson_duncan_s2028296.Item;
 import com.example.trafficscotlandmpdcw.R;
-
-import org.w3c.dom.Text;
 
 import java.time.LocalDate;
 

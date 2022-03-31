@@ -1,4 +1,4 @@
-package com.example.trafficscotlandmpdcw;
+package com.example.thomson_duncan_s2028296;
 
 import android.os.Parcel;
 import android.os.Parcelable;

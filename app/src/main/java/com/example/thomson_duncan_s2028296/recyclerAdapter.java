@@ -1,12 +1,10 @@
-package com.example.trafficscotlandmpdcw;
+package com.example.thomson_duncan_s2028296;
 
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +21,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.trafficscotlandmpdcw.Fragments.HomeFragment;
-import com.example.trafficscotlandmpdcw.Fragments.ItemFragment;
+import com.example.thomson_duncan_s2028296.Fragments.ItemFragment;
+import com.example.trafficscotlandmpdcw.R;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".Fragments.current_details">
+    tools:context="com.example.thomson_duncan_s2028296.Fragments.current_details">
 
 
     <TextView

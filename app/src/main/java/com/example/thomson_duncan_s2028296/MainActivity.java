@@ -1,52 +1,29 @@
-package com.example.trafficscotlandmpdcw;
+package com.example.thomson_duncan_s2028296;
 
 import static android.content.ContentValues.TAG;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
+
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trafficscotlandmpdcw.Fragments.HomeFragment;
-import com.example.trafficscotlandmpdcw.Fragments.HomeOptionsFragment;
-import com.example.trafficscotlandmpdcw.Fragments.JourneyFragment;
-import com.example.trafficscotlandmpdcw.Fragments.SearchFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.thomson_duncan_s2028296.Fragments.HomeFragment;
+import com.example.thomson_duncan_s2028296.Fragments.JourneyFragment;
+import com.example.thomson_duncan_s2028296.Fragments.SearchFragment;
+import com.example.trafficscotlandmpdcw.R;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -56,16 +33,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -210,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                             String[] desDetails = temp.split("<br />");
 
-
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
 
                             for (int i = 0; i < desDetails.length -1; i++) {
@@ -242,18 +214,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                         alist.get(alist.size() - 1).setWork(workmatcher.group(1));
                                     }
 
-                                    Pattern trafficPatternNoDiver = Pattern.compile("(?<=Traffic Management:)(.*)");
-                                    Pattern trafficPattern = Pattern.compile("(?<=Traffic Management:)(.*)(?=Diversion Information:)");
+                                    Log.d(TAG, "desDetails[2]: " + desDetails[2]);
+
+                                    //Pattern trafficPatternNoDiver = Pattern.compile("(?<=Traffic Management:)(.*)");
+                                    Pattern trafficPattern = Pattern.compile("(?<=Traffic Management:)(.*)(?<=\\.D)");
                                     Matcher Trafficmatcher = trafficPattern.matcher(desDetails[2]);
-                                    Matcher TrafficmatcherNoDiver = trafficPatternNoDiver.matcher(desDetails[2]);
+                                   // Matcher TrafficmatcherNoDiver = trafficPatternNoDiver.matcher(desDetails[2]);
+
+                                    //Log.d(TAG, "No Diversion" + TrafficmatcherNoDiver.find());
                                     if (Trafficmatcher.find())
                                     {
-                                        alist.get(alist.size() - 1).setTrafficManagement(Trafficmatcher.group(1));
-                                    }
-
-                                    if (TrafficmatcherNoDiver.find()){
-                                        alist.get(alist.size() - 1).setTrafficManagement(TrafficmatcherNoDiver.group(1));
-                                    }
+                                        Log.d(TAG, "parseData: " + alist.get(alist.size() - 1).getTitle());
+                                        Log.d(TAG, "WithDiversion: " + Trafficmatcher.group(1));
+                                        alist.get(alist.size() - 1).setTrafficManagement(Trafficmatcher.group(1).substring(0,Trafficmatcher.group(1).length() -1));
+                                    } //else if (TrafficmatcherNoDiver.find()){
+                                       // alist.get(alist.size() - 1).setTrafficManagement(TrafficmatcherNoDiver.group(1));
+                                   // }
 
                                     Pattern diversionPattern = Pattern.compile("(?<=Diversion Information:)(.*)");
                                     Matcher diversionmatcher = diversionPattern.matcher(desDetails[2]);
@@ -461,7 +437,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             String[] desDetails = temp.split("<br />");
 
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" d MMMM yyyy ", Locale.ENGLISH);
-
 
                             for (int i = 0; i < desDetails.length; i++) {
 

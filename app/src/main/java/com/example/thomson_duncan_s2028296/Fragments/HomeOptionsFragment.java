@@ -1,4 +1,4 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -19,15 +19,12 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.trafficscotlandmpdcw.FragmentFeedData;
-import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.MainActivity;
+import com.example.thomson_duncan_s2028296.MainActivity;
+import com.example.thomson_duncan_s2028296.FragmentFeedData;
+import com.example.thomson_duncan_s2028296.Item;
 import com.example.trafficscotlandmpdcw.R;
 
-import java.security.PublicKey;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;

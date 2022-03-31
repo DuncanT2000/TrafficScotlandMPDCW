@@ -1,4 +1,4 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -15,11 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.MainActivity;
+import com.example.thomson_duncan_s2028296.FragmentFeedData;
+import com.example.thomson_duncan_s2028296.MainActivity;
+import com.example.thomson_duncan_s2028296.Item;
 import com.example.trafficscotlandmpdcw.R;
 
 import java.time.LocalDate;
@@ -38,9 +38,6 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
     private ArrayList<Item> FilteredFeedInfo;
     private TextView setDateTV;
 
-    private EditText toLocation;
-    private EditText fromLocation;
-    private Button viewJourneyBtn;
 
     public JourneyOptionsFragment() {
         // Required empty public constructor
@@ -59,13 +56,10 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
 
         setDateTV = view.findViewById(R.id.setDateTV);
 
-        toLocation = view.findViewById(R.id.et_to);
-        fromLocation = view.findViewById(R.id.et_from);
-        viewJourneyBtn = view.findViewById(R.id.viewjourneyBtn);
 
         datePickerBtn.setOnClickListener(this);
 
-        viewJourneyBtn.setOnClickListener(this);
+
 
         return view;
     }
@@ -79,13 +73,6 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
             showDatePickerDialog();
         }
 
-        if (v == viewJourneyBtn){
-            String fromStr = fromLocation.getText().toString();
-            String toStr = toLocation.getText().toString();
-
-
-
-        }
 
 
     }
@@ -181,11 +168,19 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
                         androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
 
                         FullMapFragment fullMapFragment = new FullMapFragment();
+                        FragmentFeedData feedDataFrag = new FragmentFeedData();
 
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("feedData", FilteredFeedInfo);
                         fullMapFragment.setArguments(bundle);
+
+                        Bundle bundleFeedData = new Bundle();
+                        bundleFeedData.putSerializable("feedData", FilteredFeedInfo);
+                        feedDataFrag.setArguments(bundleFeedData);
+
                         transaction.replace(R.id.journey_map,fullMapFragment);
+
+                        transaction.replace(R.id.journey_map_items_Fragment,feedDataFrag);
                         transaction.commit();
 
 

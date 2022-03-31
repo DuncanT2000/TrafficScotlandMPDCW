@@ -1,4 +1,4 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -13,15 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.LoadingFragment;
-import com.example.trafficscotlandmpdcw.MainActivity;
-import com.example.trafficscotlandmpdcw.MapFragment;
+import com.example.thomson_duncan_s2028296.MainActivity;
+import com.example.thomson_duncan_s2028296.MapFragment;
+import com.example.thomson_duncan_s2028296.Item;
 import com.example.trafficscotlandmpdcw.R;
-
-import java.util.ArrayList;
 
 
 public class ItemFragment extends Fragment implements View.OnClickListener {

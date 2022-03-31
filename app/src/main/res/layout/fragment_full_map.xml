@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Fragments.FullMapFragment">
+    tools:context="com.example.thomson_duncan_s2028296.Fragments.FullMapFragment">
 
     <fragment
         android:id="@+id/full_google_map"

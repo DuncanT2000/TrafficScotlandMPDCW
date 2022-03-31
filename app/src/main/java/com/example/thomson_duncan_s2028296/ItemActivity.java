@@ -1,4 +1,4 @@
-package com.example.trafficscotlandmpdcw;
+package com.example.thomson_duncan_s2028296;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.example.trafficscotlandmpdcw.R;
 
 public class ItemActivity extends AppCompatActivity implements View.OnClickListener {
 

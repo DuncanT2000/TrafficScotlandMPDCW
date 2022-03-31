@@ -1,29 +1,17 @@
-package com.example.trafficscotlandmpdcw.Fragments;
+package com.example.thomson_duncan_s2028296.Fragments;
 
-import static android.content.ContentValues.TAG;
-
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.trafficscotlandmpdcw.FragmentFeedData;
-import com.example.trafficscotlandmpdcw.Item;
-import com.example.trafficscotlandmpdcw.LoadingFragment;
-import com.example.trafficscotlandmpdcw.MainActivity;
+import com.example.thomson_duncan_s2028296.Item;
 import com.example.trafficscotlandmpdcw.R;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class JourneyFragment extends Fragment {
 

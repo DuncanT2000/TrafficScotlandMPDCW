@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".Fragments.SearchFragment">
+    tools:context="com.example.thomson_duncan_s2028296.Fragments.SearchFragment">
 
     <EditText
         android:id="@+id/searchTerm"
