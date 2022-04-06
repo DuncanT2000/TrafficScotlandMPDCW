@@ -1,3 +1,9 @@
+
+/*
+ * Name; Duncan THomson
+ * Student Number: s2028296
+ * */
+
 package com.example.thomson_duncan_s2028296;
 
 import androidx.appcompat.app.AppCompatActivity;

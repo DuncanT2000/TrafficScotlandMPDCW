@@ -4,7 +4,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.thomson_duncan_s2028296.Fragments.NoResultsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!--
+ <name> Duncan Thomson
+<Student Id> s2028296
+ -->
+
     <TextView
         android:id="@+id/messagetv"
         android:layout_width="match_parent"
