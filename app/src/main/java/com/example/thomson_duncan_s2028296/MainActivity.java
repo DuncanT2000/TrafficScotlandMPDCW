@@ -40,6 +40,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 {
 
     public static FeedData feedData = new FeedData();
-
     public static View pageFragment;
     private ArrayList<Item> alist;
     private ArrayList<Item> currentincidents;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private String result = "";
     private String url1="";
     private Toolbar mytoolBar;
+    Timer timer = new Timer();
 
 
     // Traffic Scotland Planned Roadworks XML link
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             HomeFragment homeFrag = new HomeFragment();
 
+
             Bundle bundle = new Bundle();
             bundle.putSerializable("feedData", feedData.getFeedInfoArray());
             homeFrag.setArguments(bundle);
@@ -136,8 +139,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void startProgress()
     {
+        int begin = 0;
+        int timeInterval = 120000;
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Running Timer Method");
+                Executors.newSingleThreadExecutor().execute(new Task(urlArray));
+            }
+        },begin, timeInterval);
 
-        Executors.newSingleThreadExecutor().execute(new Task(urlArray));
 
     }
 
@@ -584,8 +595,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
 
-
             HomeFragment homeFrag = new HomeFragment();
+
 
             Bundle bundle = new Bundle();
             bundle.putSerializable("feedData", feedData.getFeedInfoArray());
@@ -693,19 +704,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 public void run() {
 
                     FragmentManager manager = getSupportFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
 
 
-                    HomeFragment homeFrag = new HomeFragment();
+                    if (manager.findFragmentById(R.id.pageFragment) instanceof HomeFragment){
+                        FragmentTransaction transaction = manager.beginTransaction();
+                        Log.d(TAG, "run: " + "Home fragment is set");
 
-                    feedData.setFeedInfoArray(AllFeedInfo);
+                        HomeFragment homeFrag = new HomeFragment();
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("feedData", feedData.getFeedInfoArray());
-                    homeFrag.setArguments(bundle);
+                        feedData.setFeedInfoArray(AllFeedInfo);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("feedData", feedData.getFeedInfoArray());
+                        homeFrag.setArguments(bundle);
 
-                    transaction.replace(R.id.pageFragment, homeFrag);
-                    transaction.commit();
+                        transaction.replace(R.id.pageFragment, homeFrag);
+                        transaction.commit();
+                    } else{
+                        Log.d(TAG, "run: " + "Home fragment not set");
+                        feedData.setFeedInfoArray(AllFeedInfo);
+                    }
+
+
 
 
 
@@ -718,6 +737,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+            timer.cancel();
+    }
 
 
 }
