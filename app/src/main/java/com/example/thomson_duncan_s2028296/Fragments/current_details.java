@@ -36,7 +36,7 @@ public class current_details extends Fragment {
         view = inflater.inflate(R.layout.fragment_current_details, container, false);
 
         item = getArguments().getParcelable("itemData");
-        Log.d(TAG, "onCreateView: " +item);
+
 
         TitleTv = view.findViewById(R.id.item_title);
         DescriptionTv = view.findViewById(R.id.item_description);

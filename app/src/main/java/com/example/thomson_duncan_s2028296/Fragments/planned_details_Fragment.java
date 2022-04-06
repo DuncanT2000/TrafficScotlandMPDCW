@@ -75,7 +75,6 @@ public class planned_details_Fragment extends Fragment {
         itemPubDate.setText("Publication Date: " + item.getPubDate());
 
 
-        Log.d(TAG, "onCreateView: " +item);
 
 
         return view;

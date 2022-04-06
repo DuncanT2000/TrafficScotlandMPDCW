@@ -158,10 +158,7 @@ public class JourneyOptionsFragment extends Fragment implements View.OnClickList
 
                     if (FilteredFeedInfo !=null){
 
-                        Log.d(TAG, "run UI THREAD:  Current Running UI Thread for Filtering" );
-                        Log.d(TAG, "run UI THREAD:  Item Filtered: " + FilteredFeedInfo.size());
 
-                        Log.d(TAG, "run: " + FilteredFeedInfo.size());
 
 
                         androidx.fragment.app.FragmentManager manager = getFragmentManager();

@@ -195,7 +195,6 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
 
             FilteredFeedInfo = new ArrayList<Item>();
-            Log.d(TAG, "run:  New Thread Running");
             if (feedType == "all"){
                 FilteredFeedInfo = MainActivity.feedData.getFeedInfoArray();
             }else{
@@ -205,30 +204,29 @@ public class HomeOptionsFragment extends Fragment implements View.OnClickListene
 
                     if (AllFeedInfo.get(i).getItemType() == "current" && feedType == "current"){
                         FilteredFeedInfo.add(AllFeedInfo.get(i));
-                    }
+                    }else{
+                        if (AllFeedInfo.get(i).getItemType() == feedType && AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
+                            LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
+                            LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
+
+                            Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
+                            Date startDate = java.sql.Date.valueOf(startLDate.toString());
+                            Date endDate = java.sql.Date.valueOf(endLDate.toString());
+
+                            if (pickedDate.equals(startDate) || pickedDate.after(startDate) && pickedDate.before(endDate) || pickedDate.equals(endDate)){
+                                FilteredFeedInfo.add(AllFeedInfo.get(i));
+                            }
 
 
-                    if (AllFeedInfo.get(i).getItemType() == feedType && AllFeedInfo.get(i).getStartDate() != null &&  AllFeedInfo.get(i).getEndDate() != null){
-                        LocalDate startLDate = LocalDate.parse(AllFeedInfo.get(i).getStartDate());
-                        LocalDate endLDate = LocalDate.parse(AllFeedInfo.get(i).getEndDate());
 
-                        Date pickedDate = java.sql.Date.valueOf(pickedLDate.toString());
-                        Date startDate = java.sql.Date.valueOf(startLDate.toString());
-                        Date endDate = java.sql.Date.valueOf(endLDate.toString());
 
-                        if (pickedDate.equals(startDate) || pickedDate.after(startDate) && pickedDate.before(endDate) || pickedDate.equals(endDate)){
-                            FilteredFeedInfo.add(AllFeedInfo.get(i));
                         }
-
-
-
 
                     }
 
 
                 }
 
-                Log.d(TAG, "run: " + FilteredFeedInfo.size());
             }
 
 

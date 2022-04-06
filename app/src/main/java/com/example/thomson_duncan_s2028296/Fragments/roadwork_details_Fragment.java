@@ -60,7 +60,6 @@ public class roadwork_details_Fragment extends Fragment {
         itemDelayInformation.setText("Delay Information: " + item.getDelayInformation());
         itemPubDate.setText("Publication Date: " + item.getPubDate());
 
-        Log.d(TAG, "onCreateView: " +item);
 
         return view;
     }

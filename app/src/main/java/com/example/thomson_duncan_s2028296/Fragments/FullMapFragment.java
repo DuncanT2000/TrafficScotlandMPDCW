@@ -100,7 +100,6 @@ public class FullMapFragment extends Fragment {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
 
-                                    Log.d(TAG, "onMarkerClick: " + items.get(Integer.parseInt(marker.getTitle().split("-")[0])));
 
                                     FragmentManager manager = getFragmentManager();
                                     FragmentTransaction transaction = manager.beginTransaction();

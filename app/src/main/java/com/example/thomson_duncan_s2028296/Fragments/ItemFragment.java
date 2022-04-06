@@ -46,7 +46,6 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
 
         item = getArguments().getParcelable("itemData");
 
-        Log.d(TAG, "onCreateView: " + item);
 
 
         closeBtn = view.findViewById(R.id.closeBtn);
@@ -55,7 +54,7 @@ public class ItemFragment extends Fragment implements View.OnClickListener {
 
         closeBtn.setOnClickListener(this);
 
-        Log.d(TAG, "onCreateView: " + item);
+
 
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();

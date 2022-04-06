@@ -46,7 +46,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         searchBtn = view.findViewById(R.id.searchBtn);
         searchTerm = view.findViewById(R.id.searchTerm);
 
-        Log.d(TAG, "onCreateView: " + items);
+
 
         searchBtn.setOnClickListener(this);
 
@@ -56,7 +56,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     public void startFilterBySearch( String type)
     {
-        Log.d(TAG, "startFilterByType: "+ type);
+
         if (items.size()> 0){
             new Thread(new FilterDataBySearchTerm(type)).start();
         }else{
@@ -129,7 +129,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
 
                         }else{
+                            androidx.fragment.app.FragmentManager manager = getFragmentManager();
+                            androidx.fragment.app.FragmentTransaction transaction = manager.beginTransaction();
                             Log.d(TAG, "FilteredFeedInfo is: " + FilteredFeedInfo.size());
+
+                            NoResultsFragment noResultsFragment = new NoResultsFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("searchTerm", "test");
+                            noResultsFragment.setArguments(bundle);
+                            transaction.replace(R.id.search_results_frag,noResultsFragment);
+                            transaction.commit();
+
                         }
 
 

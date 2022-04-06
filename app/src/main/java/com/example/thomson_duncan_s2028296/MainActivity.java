@@ -87,13 +87,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.e("MyTag","in onCreate");
 
         mytoolBar =  findViewById(R.id.my_tool_bar);
         setSupportActionBar(mytoolBar);
 
         if (savedInstanceState != null) {
-            Log.d(TAG, "onSavedState: Test");
 
         } else {
             pageFragment = findViewById(R.id.pageFragment);
@@ -144,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Log.d(TAG, "Running Timer Method");
                 Executors.newSingleThreadExecutor().execute(new Task(urlArray));
             }
         },begin, timeInterval);
@@ -225,7 +222,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                         alist.get(alist.size() - 1).setWork(workmatcher.group(1));
                                     }
 
-                                    Log.d(TAG, "desDetails[2]: " + desDetails[2]);
+
+
 
                                     //Pattern trafficPatternNoDiver = Pattern.compile("(?<=Traffic Management:)(.*)");
                                     Pattern trafficPattern = Pattern.compile("(?<=Traffic Management:)(.*)(?<=\\.D)");
@@ -402,7 +400,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             currentincidents.remove(0);
 
             for (int i = 0; i < currentincidents.size(); i++) {
-                Log.d(TAG, "parseData: " + currentincidents.get(i).getDescription());
                 currentincidents.get(i).setItemType("current");
             }
 
@@ -690,7 +687,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     parseData(result,"planned");
                 }
                 else if (i == 1){
-                    Log.d(TAG, "run: " + result);
                     parseData(result,"current");
                 }
                 else if (i == 2){
@@ -708,7 +704,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                     if (manager.findFragmentById(R.id.pageFragment) instanceof HomeFragment){
                         FragmentTransaction transaction = manager.beginTransaction();
-                        Log.d(TAG, "run: " + "Home fragment is set");
 
                         HomeFragment homeFrag = new HomeFragment();
 
