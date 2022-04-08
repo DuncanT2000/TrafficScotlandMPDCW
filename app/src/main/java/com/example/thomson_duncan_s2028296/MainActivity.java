@@ -15,6 +15,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -94,7 +97,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
 
         mytoolBar =  findViewById(R.id.my_tool_bar);
+        mytoolBar.setTitle("thomson_duncan_s2028296");
         setSupportActionBar(mytoolBar);
+
 
         if (savedInstanceState != null) {
 
@@ -130,6 +135,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
+    private boolean checkInternetConnection() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo!=null){
+            if (networkInfo.isConnected()){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -142,12 +165,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void startProgress()
     {
+
         int begin = 0;
         int timeInterval = 120000;
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Executors.newSingleThreadExecutor().execute(new Task(urlArray));
+
             }
         },begin, timeInterval);
 
@@ -660,69 +685,84 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run()
         {
 
-            for (int i = 0; i < url.length; i++) {
+            Boolean isConnected = checkInternetConnection();
 
-                URL aurl;
-                URLConnection yc;
-                BufferedReader in = null;
-                String inputLine = "";
-                result = "";
+            if (isConnected){
+                for (int i = 0; i < url.length; i++) {
+
+                    URL aurl;
+                    URLConnection yc;
+                    BufferedReader in = null;
+                    String inputLine = "";
+                    result = "";
 
 
-                try
-                {
-                    aurl = new URL(url[i]);
-                    yc = aurl.openConnection();
-                    in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-
-                    while ((inputLine = in.readLine()) != null)
+                    try
                     {
-                        result = result + inputLine;
+                        aurl = new URL(url[i]);
+                        yc = aurl.openConnection();
+                        in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            result = result + inputLine;
+
+                        }
+                        in.close();
 
                     }
-                    in.close();
+                    catch (IOException ae)
+                    {
+                        Log.e("MyTag", "ioexception in run");
+                    }
+
+                    if(i == 0){
+                        parseData(result,"planned");
+                    }
+                    else if (i == 1){
+                        parseData(result,"current");
+                    }
+                    else if (i == 2){
+                        parseData(result,"roadworks");
+                    }
 
                 }
-                catch (IOException ae)
-                {
-                    Log.e("MyTag", "ioexception in run");
-                }
-
-                if(i == 0){
-                    parseData(result,"planned");
-                }
-                else if (i == 1){
-                    parseData(result,"current");
-                }
-                else if (i == 2){
-                    parseData(result,"roadworks");
-                }
-
             }
+
+
 
             MainActivity.this.runOnUiThread(new Runnable()
             {
                 public void run() {
 
-                    FragmentManager manager = getSupportFragmentManager();
+                    if (isConnected){
+                        FragmentManager manager = getSupportFragmentManager();
 
+                        if (manager.findFragmentById(R.id.pageFragment) instanceof HomeFragment){
+                            FragmentTransaction transaction = manager.beginTransaction();
 
-                    if (manager.findFragmentById(R.id.pageFragment) instanceof HomeFragment){
-                        FragmentTransaction transaction = manager.beginTransaction();
+                            HomeFragment homeFrag = new HomeFragment();
 
-                        HomeFragment homeFrag = new HomeFragment();
+                            feedData.setFeedInfoArray(AllFeedInfo);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("feedData", feedData.getFeedInfoArray());
+                            homeFrag.setArguments(bundle);
 
-                        feedData.setFeedInfoArray(AllFeedInfo);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("feedData", feedData.getFeedInfoArray());
-                        homeFrag.setArguments(bundle);
+                            transaction.replace(R.id.pageFragment, homeFrag);
+                            transaction.commit();
+                        } else{
+                            Log.d(TAG, "run: " + "Home fragment not set");
+                            feedData.setFeedInfoArray(AllFeedInfo);
+                        }
+                    }else{
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                "Please connect device to the internet",
+                                Toast.LENGTH_SHORT);
 
-                        transaction.replace(R.id.pageFragment, homeFrag);
-                        transaction.commit();
-                    } else{
-                        Log.d(TAG, "run: " + "Home fragment not set");
-                        feedData.setFeedInfoArray(AllFeedInfo);
+                        toast.show();
                     }
+
+
 
 
 
