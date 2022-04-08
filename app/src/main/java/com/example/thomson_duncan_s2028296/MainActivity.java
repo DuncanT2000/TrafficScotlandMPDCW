@@ -255,10 +255,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
 
-                                    //Pattern trafficPatternNoDiver = Pattern.compile("(?<=Traffic Management:)(.*)");
+                                    Pattern trafficPatternNoDiver = Pattern.compile("(?<=Traffic Management:)(.*)");
                                     Pattern trafficPattern = Pattern.compile("(?<=Traffic Management:)(.*)(?<=\\.D)");
                                     Matcher Trafficmatcher = trafficPattern.matcher(desDetails[2]);
-                                   // Matcher TrafficmatcherNoDiver = trafficPatternNoDiver.matcher(desDetails[2]);
+                                    Matcher TrafficmatcherNoDiver = trafficPatternNoDiver.matcher(desDetails[2]);
 
                                     //Log.d(TAG, "No Diversion" + TrafficmatcherNoDiver.find());
                                     if (Trafficmatcher.find())
@@ -266,9 +266,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                         Log.d(TAG, "parseData: " + alist.get(alist.size() - 1).getTitle());
                                         Log.d(TAG, "WithDiversion: " + Trafficmatcher.group(1));
                                         alist.get(alist.size() - 1).setTrafficManagement(Trafficmatcher.group(1).substring(0,Trafficmatcher.group(1).length() -1));
-                                    } //else if (TrafficmatcherNoDiver.find()){
-                                       // alist.get(alist.size() - 1).setTrafficManagement(TrafficmatcherNoDiver.group(1));
-                                   // }
+                                    } else if (TrafficmatcherNoDiver.find()){
+                                        alist.get(alist.size() - 1).setTrafficManagement(TrafficmatcherNoDiver.group(1));
+                                    }
 
                                     Pattern diversionPattern = Pattern.compile("(?<=Diversion Information:)(.*)");
                                     Matcher diversionmatcher = diversionPattern.matcher(desDetails[2]);
